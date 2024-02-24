@@ -79,3 +79,22 @@ class TestRecommendation(TestCase):
         self.assertEqual(recommendation.product_a_sku, "AB1111")
         self.assertEqual(recommendation.product_b_sku, "BA2222")
         self.assertEqual(recommendation.type, RecommendationType.CROSS_SELL)
+
+    def test_add_recommendation(self):
+        """It should create a recommendation and add it to the database"""
+        recommendations = Recommendation.all()
+        self.assertEqual(recommendations, [])
+        recommendation = Recommendation(
+            product_a_sku="A1", product_b_sku="B1", type=RecommendationType.UP_SELL
+        )
+        self.assertTrue(recommendation is not None)
+        self.assertEqual(recommendation.id, None)
+        recommendation.create()
+
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(recommendation.id)
+        recommendations = Recommendation.all()
+        self.assertEqual(len(recommendations), 1)
+        self.assertEqual(recommendations[0].product_a_sku, "A1")
+        self.assertEqual(recommendations[0].product_b_sku, "B1")
+        self.assertEqual(recommendations[0].type, RecommendationType.UP_SELL)
