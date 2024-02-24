@@ -56,8 +56,24 @@ class TestRecommendation(TestCase):
 
     def test_create_recommendation(self):
         """It should Create a recommendation and assert that it exists"""
-        # recommendation = Recommendation(
-        #     product_a_sku="AA0001",
-        #     product_b_sku="AA0002",
-        #     type=RecommendationType.UP_SELL,
-        # )
+        recommendation = Recommendation(
+            product_a_sku="AA0001",
+            product_b_sku="AA0002",
+            type=RecommendationType.UP_SELL,
+        )
+        self.assertEqual(str(recommendation), "<Recommendation AA0001-AA0002 id=[None]")
+        self.assertTrue(recommendation is not None)
+        self.assertEqual(recommendation.id, None)
+        self.assertEqual(recommendation.product_a_sku, "AA0001")
+        self.assertEqual(recommendation.product_b_sku, "AA0002")
+        self.assertEqual(recommendation.type, RecommendationType.UP_SELL)
+
+        # test new recommendation
+        recommendation = Recommendation(
+            product_a_sku="AB1111",
+            product_b_sku="BA2222",
+            type=RecommendationType.CROSS_SELL,
+        )
+        self.assertEqual(recommendation.product_a_sku, "AB1111")
+        self.assertEqual(recommendation.product_b_sku, "BA2222")
+        self.assertEqual(recommendation.type, RecommendationType.CROSS_SELL)
