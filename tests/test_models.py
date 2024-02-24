@@ -6,7 +6,7 @@ import os
 import logging
 from unittest import TestCase
 from wsgi import app
-from service.models import Recommendation, DataValidationError, db
+from service.models import Recommendation, RecommendationType, DataValidationError, db
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI",
@@ -48,9 +48,10 @@ class TestRecommendation(TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    def test_example_replace_this(self):
-        """It should always be true"""
-        # Todo: Remove this test case example
-        self.assertTrue(True)
-
-    # Todo: Add your test cases here...
+    def test_create_recommendation(self):
+        """It should Create a recommendation and assert that it exists"""
+        recommendation = Recommendation(
+            product_a_sku="AA0001",
+            product_b_sku="AA0002",
+            type=RecommendationType.UP_SELL,
+        )
