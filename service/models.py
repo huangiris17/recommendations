@@ -5,6 +5,7 @@ All of the models are stored in this module
 """
 
 import logging
+from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
@@ -15,6 +16,10 @@ db = SQLAlchemy()
 
 class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
+
+
+class RecommendationType(Enum):
+    """Enum representing types of recommendation"""
 
 
 class Recommendation(db.Model):
