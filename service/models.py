@@ -22,6 +22,9 @@ class RecommendationType(Enum):
     """Enum representing types of recommendation"""
 
     UP_SELL = "UP_SELL"
+    CROSS_SELL = "CROSS_SELL"
+    ACCESSORY = "ACCESSORY"
+    BUNDLE = "BUNDLE"
 
 
 class Recommendation(db.Model):
