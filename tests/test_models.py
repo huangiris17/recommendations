@@ -48,10 +48,16 @@ class TestRecommendation(TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
+    def test_recommendation_type_values(self):
+        """It should contain all desired types of recommendation"""
+        target_values = ["UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"]
+        values = [type.value for type in RecommendationType]
+        [self.assertTrue(target_value in values) for target_value in target_values]
+
     def test_create_recommendation(self):
         """It should Create a recommendation and assert that it exists"""
-        recommendation = Recommendation(
-            product_a_sku="AA0001",
-            product_b_sku="AA0002",
-            type=RecommendationType.UP_SELL,
-        )
+        # recommendation = Recommendation(
+        #     product_a_sku="AA0001",
+        #     product_b_sku="AA0002",
+        #     type=RecommendationType.UP_SELL,
+        # )

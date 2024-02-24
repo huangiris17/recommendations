@@ -21,6 +21,8 @@ class DataValidationError(Exception):
 class RecommendationType(Enum):
     """Enum representing types of recommendation"""
 
+    UP_SELL = "UP_SELL"
+
 
 class Recommendation(db.Model):
     """
