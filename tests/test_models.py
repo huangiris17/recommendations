@@ -61,7 +61,9 @@ class TestRecommendation(TestCase):
             product_b_sku="AA0002",
             type=RecommendationType.UP_SELL,
         )
-        self.assertEqual(str(recommendation), "<Recommendation AA0001-AA0002 id=[None]")
+        self.assertEqual(
+            str(recommendation), "<Recommendation AA0001-AA0002 id=[None]>"
+        )
         self.assertTrue(recommendation is not None)
         self.assertEqual(recommendation.id, None)
         self.assertEqual(recommendation.product_a_sku, "AA0001")

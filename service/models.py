@@ -36,12 +36,14 @@ class Recommendation(db.Model):
     # Table Schema
     ##################################################
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(63))
-
-    # Todo: Place the rest of your schema here...
+    product_a_sku = db.Column(db.String(10), nullable=False)
+    product_b_sku = db.Column(db.String(10), nullable=False)
+    type = db.Column(db.Enum(RecommendationType), nullable=False)
 
     def __repr__(self):
-        return f"<Recommendation {self.name} id=[{self.id}]>"
+        return (
+            f"<Recommendation {self.product_a_sku}-{self.product_b_sku} id=[{self.id}]>"
+        )
 
     def create(self):
         """
