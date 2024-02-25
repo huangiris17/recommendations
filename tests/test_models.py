@@ -7,6 +7,7 @@ import logging
 from unittest import TestCase
 from wsgi import app
 from service.models import Recommendation, RecommendationType, DataValidationError, db
+from tests.factories import RecommendationFactory
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI",
@@ -99,3 +100,22 @@ class TestRecommendation(TestCase):
         self.assertEqual(recommendations[0].product_a_sku, "A1")
         self.assertEqual(recommendations[0].product_b_sku, "B1")
         self.assertEqual(recommendations[0].type, RecommendationType.UP_SELL)
+
+    def test_read_recommendation(self):
+        """It should Read a Recommendation"""
+        recommendation = RecommendationFactory()
+        logging.debug(recommendation)
+        recommendation.id = None
+        recommendation.create()
+        self.assertIsNotNone(recommendation.id)
+
+        # Fetch it back
+        found_recommendation = Recommendation.find(recommendation.id)
+        self.assertEqual(found_recommendation.id, recommendation.id)
+        self.assertEqual(
+            found_recommendation.product_a_sku, recommendation.product_a_sku
+        )
+        self.assertEqual(
+            found_recommendation.product_b_sku, recommendation.product_b_sku
+        )
+        self.assertEqual(found_recommendation.type, recommendation.type)
