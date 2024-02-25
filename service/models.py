@@ -162,11 +162,11 @@ class Recommendation(db.Model):
         return cls.query.get(by_id)
 
     @classmethod
-    def find_by_name(cls, name):
-        """Returns all Recommendations with the given name
+    def find_by_product_a_sku(cls, sku):
+        """Returns all Recommendations with the given product a sku
 
         Args:
-            name (string): the name of the Recommendations you want to match
+            sku (string): the sku of product A in the Recommendations you want to match
         """
-        logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)
+        logger.info("Processing product s sku query for %s ...", sku)
+        return cls.query.filter(cls.product_a_sku == sku)
