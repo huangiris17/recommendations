@@ -142,3 +142,10 @@ class TestRecommendation(TestCase):
         self.assertEqual(len(recommendations), 1)
         self.assertEqual(recommendations[0].id, original_id)
         self.assertEqual(recommendations[0].product_a_sku, "ABC")
+
+    def test_update_no_id(self):
+        """It should not Update a Recommendation with no id"""
+        recommendation = RecommendationFactory()
+        logging.debug(recommendation)
+        recommendation.id = None
+        self.assertRaises(DataValidationError, recommendation.update)
