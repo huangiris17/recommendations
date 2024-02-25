@@ -177,3 +177,17 @@ class TestRecommendation(TestCase):
         # See if we get back 5 pets
         recommendations = Recommendation.all()
         self.assertEqual(len(recommendations), 5)
+
+    def test_serialize_recommendation(self):
+        """It should serialize a Recommendation"""
+        recommendation = RecommendationFactory()
+        data = recommendation.serialize()
+        self.assertNotEqual(data, None)
+        self.assertIn("id", data)
+        self.assertEqual(data["id"], recommendation.id)
+        self.assertIn("product_a_sku", data)
+        self.assertEqual(data["product_a_sku"], recommendation.product_a_sku)
+        self.assertIn("product_b_sku", data)
+        self.assertEqual(data["product_b_sku"], recommendation.product_b_sku)
+        self.assertIn("type", data)
+        self.assertEqual(data["type"], recommendation.type.name)
