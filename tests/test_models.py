@@ -267,3 +267,26 @@ class TestExceptionHandlers(TestCaseBase):
         exception_mock.side_effect = Exception()
         recommendation = RecommendationFactory()
         self.assertRaises(DataValidationError, recommendation.delete)
+
+
+######################################################################
+#  Q U E R Y   T E S T   C A S E S
+######################################################################
+class TestModelQueries(TestCaseBase):
+    """Recommendation Model Query Tests"""
+
+    def test_find_recommendation(self):
+        """It should Find a Recommendation by ID"""
+        recommendations = RecommendationFactory.create_batch(5)
+        for recommendation in recommendations:
+            recommendation.create()
+        logging.debug(recommendations)
+        # make sure they got saved
+        self.assertEqual(len(Recommendation.all()), 5)
+        # find the 2nd pet in the list
+        recommendation = Recommendation.find(recommendations[1].id)
+        self.assertIsNot(recommendation, None)
+        self.assertEqual(recommendation.id, recommendations[1].id)
+        self.assertEqual(recommendation.product_a_sku, recommendations[1].product_a_sku)
+        self.assertEqual(recommendation.product_b_sku, recommendations[1].product_b_sku)
+        self.assertEqual(recommendation.type, recommendations[1].type)
