@@ -180,3 +180,17 @@ class Recommendation(db.Model):
         """
         logger.info("Processing product b sku query for %s ...", sku)
         return cls.query.filter(cls.product_b_sku == sku)
+
+    @classmethod
+    def find_by_type(cls, type: RecommendationType) -> list:
+        """Returns all Recommendations by their Type
+
+        :param type: RecommendationType
+        :type available: enum
+
+        :return: a collection of Recommendations that are of requested type
+        :rtype: list
+
+        """
+        logger.info("Processing type query for %s ...", type.name)
+        return cls.query.filter(cls.type == type)
