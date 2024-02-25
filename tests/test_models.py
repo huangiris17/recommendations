@@ -5,13 +5,13 @@ Test cases for Pet Model
 import os
 import logging
 from unittest import TestCase
+from unittest.mock import patch
 from wsgi import app
 from service.models import (
     Recommendation,
     RecommendationType,
     DataValidationError,
     db,
-    PrimaryKeyNotSetError,
 )
 from tests.factories import RecommendationFactory
 
@@ -25,7 +25,7 @@ DATABASE_URI = os.getenv(
 #  R E C O M M E N D A T I O N   M O D E L   T E S T   C A S E S
 ######################################################################
 # pylint: disable=too-many-public-methods
-class TestRecommendation(TestCase):
+class TestCaseBase(TestCase):
     """Test Cases for Recommendation Model"""
 
     @classmethod
@@ -51,9 +51,12 @@ class TestRecommendation(TestCase):
         """This runs after each test"""
         db.session.remove()
 
-    ######################################################################
-    #  T E S T   C A S E S
-    ######################################################################
+
+######################################################################
+#  R E C O M M E N D A T I O N   M O D E L   T E S T   C A S E S
+######################################################################
+class TestRecommendationModel(TestCaseBase):
+    """Recommendation Model CRUD Tests"""
 
     def test_recommendation_type_values(self):
         """It should contain all desired types of recommendation"""
@@ -236,3 +239,31 @@ class TestRecommendation(TestCase):
         data["type"] = "cross_sale"  # wrong case
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+
+######################################################################
+#  T E S T   E X C E P T I O N   H A N D L E R S
+######################################################################
+class TestExceptionHandlers(TestCaseBase):
+    """Recommendation Model Exception Handlers"""
+
+    @patch("service.models.db.session.commit")
+    def test_create_exception(self, exception_mock):
+        """It should catch a create exception"""
+        exception_mock.side_effect = Exception()
+        recommendation = RecommendationFactory()
+        self.assertRaises(DataValidationError, recommendation.create)
+
+    @patch("service.models.db.session.commit")
+    def test_update_exception(self, exception_mock):
+        """It should catch a update exception"""
+        exception_mock.side_effect = Exception()
+        recommendation = RecommendationFactory()
+        self.assertRaises(DataValidationError, recommendation.update)
+
+    @patch("service.models.db.session.commit")
+    def test_delete_exception(self, exception_mock):
+        """It should catch a delete exception"""
+        exception_mock.side_effect = Exception()
+        recommendation = RecommendationFactory()
+        self.assertRaises(DataValidationError, recommendation.delete)
