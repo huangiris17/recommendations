@@ -1,9 +1,11 @@
 """
-Models for YourResourceModel
+Models for Recommendation
 
 All of the models are stored in this module
 """
+
 import logging
+from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
@@ -13,28 +15,52 @@ db = SQLAlchemy()
 
 
 class DataValidationError(Exception):
-    """ Used for an data validation errors when deserializing """
+    """Used for an data validation errors when deserializing"""
 
 
-class YourResourceModel(db.Model):
+class PrimaryKeyNotSetError(Exception):
+    """Used when tried to set primary key to None"""
+
+
+class TextColumnLimitExceededError(Exception):
+    """Used when column character limit has been exceeded"""
+
+
+class RecommendationType(Enum):
+    """Enum representing types of recommendation"""
+
+    UP_SELL = "UP_SELL"
+    CROSS_SELL = "CROSS_SELL"
+    ACCESSORY = "ACCESSORY"
+    BUNDLE = "BUNDLE"
+
+
+SKU_CHAR_LIMIT = 10
+
+
+class Recommendation(db.Model):
     """
-    Class that represents a YourResourceModel
+    Class that represents a Recommendation
     """
 
     ##################################################
     # Table Schema
     ##################################################
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(63))
+    product_a_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
+    product_b_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
+    type = db.Column(db.Enum(RecommendationType), nullable=False)
 
-    # Todo: Place the rest of your schema here...
+    name = f"{product_a_sku}-{product_b_sku}"
 
     def __repr__(self):
-        return f"<YourResourceModel {self.name} id=[{self.id}]>"
+        return (
+            f"<Recommendation {self.product_a_sku}-{self.product_b_sku} id=[{self.id}]>"
+        )
 
     def create(self):
         """
-        Creates a YourResourceModel to the database
+        Creates a Recommendation to the database
         """
         logger.info("Creating %s", self.name)
         self.id = None  # pylint: disable=invalid-name
@@ -48,10 +74,14 @@ class YourResourceModel(db.Model):
 
     def update(self):
         """
-        Updates a YourResourceModel to the database
+        Updates a Recommendation to the database
         """
         logger.info("Saving %s", self.name)
         try:
+            if self.id is None:
+                # don't allow primary key to be set to None
+                raise PrimaryKeyNotSetError()
+
             db.session.commit()
         except Exception as e:
             db.session.rollback()
@@ -59,7 +89,7 @@ class YourResourceModel(db.Model):
             raise DataValidationError(e) from e
 
     def delete(self):
-        """ Removes a YourResourceModel from the data store """
+        """Removes a Recommendation from the data store"""
         logger.info("Deleting %s", self.name)
         try:
             db.session.delete(self)
@@ -70,28 +100,49 @@ class YourResourceModel(db.Model):
             raise DataValidationError(e) from e
 
     def serialize(self):
-        """ Serializes a YourResourceModel into a dictionary """
-        return {"id": self.id, "name": self.name}
+        """Serializes a Recommendation into a dictionary"""
+        return {
+            "id": self.id,
+            "product_a_sku": self.product_a_sku,
+            "product_b_sku": self.product_b_sku,
+            "type": self.type.name,
+        }
 
     def deserialize(self, data):
         """
-        Deserializes a YourResourceModel from a dictionary
+        Deserializes a Recommendation from a dictionary
 
         Args:
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.name = data["name"]
+            if len(data["product_a_sku"]) > SKU_CHAR_LIMIT:
+                raise TextColumnLimitExceededError("product_a_sku")
+            self.product_a_sku = data["product_a_sku"]
+
+            if len(data["product_b_sku"]) > SKU_CHAR_LIMIT:
+                raise TextColumnLimitExceededError("product_b_sku")
+            self.product_b_sku = data["product_b_sku"]
+            self.type = getattr(
+                RecommendationType, data["type"]
+            )  # create enum from string
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
             raise DataValidationError(
-                "Invalid YourResourceModel: missing " + error.args[0]
+                "Invalid Recommendation: missing " + error.args[0]
             ) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid YourResourceModel: body of request contained bad or no data " + str(error)
+                "Invalid Recommendation: body of request contained bad or no data "
+                + str(error)
             ) from error
+        except TextColumnLimitExceededError as error:
+            raise DataValidationError(
+                "Invalid Recommendation: exceeded maximum character limit at column: "
+                + str(error)
+            ) from error
+
         return self
 
     ##################################################
@@ -100,22 +151,46 @@ class YourResourceModel(db.Model):
 
     @classmethod
     def all(cls):
-        """ Returns all of the YourResourceModels in the database """
-        logger.info("Processing all YourResourceModels")
+        """Returns all of the Recommendations in the database"""
+        logger.info("Processing all Recommendations")
         return cls.query.all()
 
     @classmethod
     def find(cls, by_id):
-        """ Finds a YourResourceModel by it's ID """
+        """Finds a Recommendation by it's ID"""
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
     @classmethod
-    def find_by_name(cls, name):
-        """Returns all YourResourceModels with the given name
+    def find_by_product_a_sku(cls, sku):
+        """Returns all Recommendations with the given product a sku
 
         Args:
-            name (string): the name of the YourResourceModels you want to match
+            sku (string): the sku of product A in the Recommendations you want to match
         """
-        logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)
+        logger.info("Processing product a sku query for %s ...", sku)
+        return cls.query.filter(cls.product_a_sku == sku)
+
+    @classmethod
+    def find_by_product_b_sku(cls, sku):
+        """Returns all Recommendations with the given product b sku
+
+        Args:
+            sku (string): the sku of product B in the Recommendations you want to match
+        """
+        logger.info("Processing product b sku query for %s ...", sku)
+        return cls.query.filter(cls.product_b_sku == sku)
+
+    @classmethod
+    def find_by_type(cls, type: RecommendationType) -> list:
+        """Returns all Recommendations by their Type
+
+        :param type: RecommendationType
+        :type available: enum
+
+        :return: a collection of Recommendations that are of requested type
+        :rtype: list
+
+        """
+        logger.info("Processing type query for %s ...", type.name)
+        return cls.query.filter(cls.type == type)
