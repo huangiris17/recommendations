@@ -290,3 +290,21 @@ class TestModelQueries(TestCaseBase):
         self.assertEqual(recommendation.product_a_sku, recommendations[1].product_a_sku)
         self.assertEqual(recommendation.product_b_sku, recommendations[1].product_b_sku)
         self.assertEqual(recommendation.type, recommendations[1].type)
+
+    def test_find_by_product_a_sku(self):
+        """It should Find Recommendations by product_a_sku"""
+        recommendations = RecommendationFactory.create_batch(10)
+        for recommendation in recommendations:
+            recommendation.create()
+        sku = recommendations[0].product_a_sku
+        count = len(
+            [
+                recommendation
+                for recommendation in recommendations
+                if recommendation.product_a_sku == sku
+            ]
+        )
+        found = Recommendation.find_by_product_a_sku(sku)
+        self.assertEqual(found.count(), count)
+        for recommendation in found:
+            self.assertEqual(recommendation.product_a_sku, sku)
