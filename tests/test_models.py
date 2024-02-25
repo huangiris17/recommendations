@@ -52,7 +52,8 @@ class TestRecommendation(TestCase):
         """It should contain all desired types of recommendation"""
         target_values = ["UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"]
         values = [type.value for type in RecommendationType]
-        [self.assertTrue(target_value in values) for target_value in target_values]
+        for target_value in target_values:
+            self.assertTrue(target_value in values)
 
     def test_create_recommendation(self):
         """It should Create a recommendation and assert that it exists"""

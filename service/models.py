@@ -40,6 +40,8 @@ class Recommendation(db.Model):
     product_b_sku = db.Column(db.String(10), nullable=False)
     type = db.Column(db.Enum(RecommendationType), nullable=False)
 
+    name = f"{product_a_sku}-{product_b_sku}"
+
     def __repr__(self):
         return (
             f"<Recommendation {self.product_a_sku}-{self.product_b_sku} id=[{self.id}]>"
