@@ -191,3 +191,14 @@ class TestRecommendation(TestCase):
         self.assertEqual(data["product_b_sku"], recommendation.product_b_sku)
         self.assertIn("type", data)
         self.assertEqual(data["type"], recommendation.type.name)
+
+    def test_deserialize_recommendation(self):
+        """It should de-serialize a Recommendation"""
+        data = RecommendationFactory().serialize()
+        recommendation = Recommendation()
+        recommendation.deserialize(data)
+        self.assertNotEqual(recommendation, None)
+        self.assertEqual(recommendation.id, None)
+        self.assertEqual(recommendation.product_a_sku, data["product_a_sku"])
+        self.assertEqual(recommendation.product_b_sku, data["product_b_sku"])
+        self.assertEqual(recommendation.type, data["type"])
