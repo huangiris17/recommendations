@@ -208,3 +208,31 @@ class TestRecommendation(TestCase):
         data = {"id": 1, "product_a_sku": "AA", "product_b_sku": "BB"}
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+    def test_deserialize_bad_data(self):
+        """It should not deserialize bad data"""
+        data = "this is not a dictionary"
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+    def test_deserialize_long_sku(self):
+        """It should not deserialize too long SKU attribute"""
+        test_recommendation = RecommendationFactory()
+        data = test_recommendation.serialize()
+        data["product_a_sku"] = "AAAAAAAAAAA"
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+        # same check for product b
+        data["product_a_sku"] = "A"
+        data["product_b_sku"] = "BBBBBBBBBBB"
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+    def test_deserialize_bad_type(self):
+        """It should not deserialize a bad type attribute"""
+        test_recommendation = RecommendationFactory()
+        data = test_recommendation.serialize()
+        data["type"] = "cross_sale"  # wrong case
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
