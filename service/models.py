@@ -168,5 +168,15 @@ class Recommendation(db.Model):
         Args:
             sku (string): the sku of product A in the Recommendations you want to match
         """
-        logger.info("Processing product s sku query for %s ...", sku)
+        logger.info("Processing product a sku query for %s ...", sku)
         return cls.query.filter(cls.product_a_sku == sku)
+
+    @classmethod
+    def find_by_product_b_sku(cls, sku):
+        """Returns all Recommendations with the given product b sku
+
+        Args:
+            sku (string): the sku of product B in the Recommendations you want to match
+        """
+        logger.info("Processing product b sku query for %s ...", sku)
+        return cls.query.filter(cls.product_b_sku == sku)
