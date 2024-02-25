@@ -84,7 +84,12 @@ class Recommendation(db.Model):
 
     def serialize(self):
         """Serializes a Recommendation into a dictionary"""
-        return {"id": self.id, "name": self.name}
+        return {
+            "id": self.id,
+            "product_a_sku": self.product_a_sku,
+            "product_b_sku": self.product_b_sku,
+            "type": self.type,
+        }
 
     def deserialize(self, data):
         """
@@ -94,7 +99,9 @@ class Recommendation(db.Model):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.name = data["name"]
+            self.product_a_sku = data["product_a_sku"]
+            self.product_b_sku = data["product_b_sku"]
+            self.type = data["type"]
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
