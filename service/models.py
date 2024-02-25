@@ -18,6 +18,10 @@ class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
 
 
+class PrimaryKeyNotSetError(Exception):
+    """Used when tried to set primary key to None"""
+
+
 class RecommendationType(Enum):
     """Enum representing types of recommendation"""
 
@@ -67,6 +71,10 @@ class Recommendation(db.Model):
         """
         logger.info("Saving %s", self.name)
         try:
+            if self.id is None:
+                # don't allow primary key to be set to None
+                raise PrimaryKeyNotSetError()
+
             db.session.commit()
         except Exception as e:
             db.session.rollback()

@@ -6,7 +6,13 @@ import os
 import logging
 from unittest import TestCase
 from wsgi import app
-from service.models import Recommendation, RecommendationType, DataValidationError, db
+from service.models import (
+    Recommendation,
+    RecommendationType,
+    DataValidationError,
+    db,
+    PrimaryKeyNotSetError,
+)
 from tests.factories import RecommendationFactory
 
 DATABASE_URI = os.getenv(
