@@ -22,6 +22,10 @@ class PrimaryKeyNotSetError(Exception):
     """Used when tried to set primary key to None"""
 
 
+class TextColumnLimitExceededError(Exception):
+    """Used when column character limit has been exceeded"""
+
+
 class RecommendationType(Enum):
     """Enum representing types of recommendation"""
 
@@ -29,6 +33,9 @@ class RecommendationType(Enum):
     CROSS_SELL = "CROSS_SELL"
     ACCESSORY = "ACCESSORY"
     BUNDLE = "BUNDLE"
+
+
+SKU_CHAR_LIMIT = 10
 
 
 class Recommendation(db.Model):
@@ -40,8 +47,8 @@ class Recommendation(db.Model):
     # Table Schema
     ##################################################
     id = db.Column(db.Integer, primary_key=True)
-    product_a_sku = db.Column(db.String(10), nullable=False)
-    product_b_sku = db.Column(db.String(10), nullable=False)
+    product_a_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
+    product_b_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
     type = db.Column(db.Enum(RecommendationType), nullable=False)
 
     name = f"{product_a_sku}-{product_b_sku}"
@@ -109,9 +116,16 @@ class Recommendation(db.Model):
             data (dict): A dictionary containing the resource data
         """
         try:
+            if len(data["product_a_sku"]) > SKU_CHAR_LIMIT:
+                raise TextColumnLimitExceededError("product_a_sku")
             self.product_a_sku = data["product_a_sku"]
+
+            if len(data["product_b_sku"]) > SKU_CHAR_LIMIT:
+                raise TextColumnLimitExceededError("product_b_sku")
             self.product_b_sku = data["product_b_sku"]
-            self.type = data["type"]
+            self.type = getattr(
+                RecommendationType, data["type"]
+            )  # create enum from string
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
@@ -123,6 +137,12 @@ class Recommendation(db.Model):
                 "Invalid Recommendation: body of request contained bad or no data "
                 + str(error)
             ) from error
+        except TextColumnLimitExceededError as error:
+            raise DataValidationError(
+                "Invalid Recommendation: exceeded maximum character limit at column: "
+                + str(error)
+            ) from error
+
         return self
 
     ##################################################

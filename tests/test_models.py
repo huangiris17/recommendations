@@ -201,7 +201,7 @@ class TestRecommendation(TestCase):
         self.assertEqual(recommendation.id, None)
         self.assertEqual(recommendation.product_a_sku, data["product_a_sku"])
         self.assertEqual(recommendation.product_b_sku, data["product_b_sku"])
-        self.assertEqual(recommendation.type, data["type"])
+        self.assertEqual(recommendation.type, getattr(RecommendationType, data["type"]))
 
     def test_deserialize_missing_data(self):
         """It should not deserialize a Recommendation with missing data"""
