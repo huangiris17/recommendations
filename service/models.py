@@ -98,7 +98,7 @@ class Recommendation(db.Model):
             "id": self.id,
             "product_a_sku": self.product_a_sku,
             "product_b_sku": self.product_b_sku,
-            "type": self.type,
+            "type": self.type.name,
         }
 
     def deserialize(self, data):
