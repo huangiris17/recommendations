@@ -119,3 +119,26 @@ class TestRecommendation(TestCase):
             found_recommendation.product_b_sku, recommendation.product_b_sku
         )
         self.assertEqual(found_recommendation.type, recommendation.type)
+
+    def test_update_recommendation(self):
+        """It should Update a Recommendation"""
+        recommendation = RecommendationFactory()
+        logging.debug(recommendation)
+        recommendation.id = None
+        recommendation.create()
+        logging.debug(recommendation)
+        self.assertIsNotNone(recommendation.id)
+
+        # Change it an save it
+        recommendation.product_a_sku = "ABC"
+        original_id = recommendation.id
+        recommendation.update()
+        self.assertEqual(recommendation.id, original_id)
+        self.assertEqual(recommendation.product_a_sku, "ABC")
+
+        # Fetch it back and make sure the id hasn't changed
+        # but the data did change
+        recommendations = Recommendation.all()
+        self.assertEqual(len(recommendations), 1)
+        self.assertEqual(recommendations[0].id, original_id)
+        self.assertEqual(recommendations[0].product_a_sku, "ABC")
