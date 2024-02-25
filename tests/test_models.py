@@ -332,15 +332,15 @@ class TestModelQueries(TestCaseBase):
         recommendations = RecommendationFactory.create_batch(10)
         for recommendation in recommendations:
             recommendation.create()
-        type = recommendations[0].type
+        recommendation_type = recommendations[0].type
         count = len(
             [
                 recommendation
                 for recommendation in recommendations
-                if recommendation.type == type
+                if recommendation.type == recommendation_type
             ]
         )
-        found = Recommendation.find_by_type(type)
+        found = Recommendation.find_by_type(recommendation_type)
         self.assertEqual(found.count(), count)
         for recommendation in found:
-            self.assertEqual(recommendation.type, type)
+            self.assertEqual(recommendation.type, recommendation_type)
