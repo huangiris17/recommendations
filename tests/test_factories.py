@@ -1,6 +1,6 @@
 from unittest import TestCase
 from tests.factories import RecommendationFactory
-from service.models import Recommendation, RecommendationType
+from service.models import RecommendationType
 
 
 # pylint: disable=too-many-public-methods
@@ -11,7 +11,7 @@ class TestFactories(TestCase):
         """It should return recommendation with random data"""
         recommendation = RecommendationFactory()
         self.assertTrue(recommendation is not None)
-        self.assertEqual(recommendation.id, None)
+        self.assertTrue(recommendation.id is not None)
         self.assertTrue(recommendation.product_a_sku is not None)
         self.assertTrue(recommendation.product_b_sku is not None)
         self.assertTrue(recommendation.type in RecommendationType)
