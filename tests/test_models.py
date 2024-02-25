@@ -155,3 +155,13 @@ class TestRecommendation(TestCase):
         logging.debug(recommendation)
         recommendation.id = None
         self.assertRaises(DataValidationError, recommendation.update)
+
+    def test_delete_recommendation(self):
+        """It should Delete a Recommendation"""
+        recommendation = RecommendationFactory()
+        recommendation.create()
+        self.assertEqual(len(Recommendation.all()), 1)
+
+        # delete the recommendation and make sure it isn't in the database
+        recommendation.delete()
+        self.assertEqual(len(Recommendation.all()), 0)
