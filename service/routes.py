@@ -44,3 +44,10 @@ def index():
 ######################################################################
 
 # Todo: Place your REST API code here ...
+@app.route("/list")
+def index():
+    """Root URL response"""
+    return (
+        "Reminder: list all objects here",
+        status.HTTP_200_OK,
+    )
