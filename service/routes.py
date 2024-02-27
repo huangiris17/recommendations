@@ -44,10 +44,12 @@ def index():
 ######################################################################
 
 # Todo: Place your REST API code here ...
-@app.route("/list")
-def index():
-    """Root URL response"""
+@app.route("/recommendations", methods=["GET"])
+def list_recommendations():
+    """List recommendations"""
+    app.logger.info("Request to list all recommendations...")
+    
     return (
-        "Reminder: list all objects here",
+        Recommendation.all()
         status.HTTP_200_OK,
     )
