@@ -1,5 +1,5 @@
 """
-Test cases for Pet Model
+Test cases for Recommendation Model
 """
 
 import os
@@ -173,11 +173,11 @@ class TestRecommendationModel(TestCaseBase):
         """It should List all Recommendations in the database"""
         recommendations = Recommendation.all()
         self.assertEqual(recommendations, [])
-        # Create 5 Pets
+        # Create 5 Recommendations
         for _ in range(5):
             recommendation = RecommendationFactory()
             recommendation.create()
-        # See if we get back 5 pets
+        # See if we get back 5 recommendations
         recommendations = Recommendation.all()
         self.assertEqual(len(recommendations), 5)
 
@@ -283,7 +283,7 @@ class TestModelQueries(TestCaseBase):
         logging.debug(recommendations)
         # make sure they got saved
         self.assertEqual(len(Recommendation.all()), 5)
-        # find the 2nd pet in the list
+        # find the 2nd recommendation in the list
         recommendation = Recommendation.find(recommendations[1].id)
         self.assertIsNot(recommendation, None)
         self.assertEqual(recommendation.id, recommendations[1].id)
