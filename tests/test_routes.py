@@ -48,7 +48,7 @@ class TestRecommendationService(TestCase):
         db.session.remove()
 
     def _create_recommendations(self, count):
-        """Factory method to create pets in bulk"""
+        """Factory method to create recommendations in bulk"""
         recommendations = []
         for _ in range(count):
             test_recommendation = RecommendationFactory()
