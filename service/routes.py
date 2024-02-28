@@ -43,6 +43,7 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
+<<<<<<< HEAD
 # Todo: Place your REST API code here ...
 @app.route("/recommendations", methods=["GET"])
 def list_recommendations():
@@ -53,3 +54,63 @@ def list_recommendations():
         Recommendation.all()
         status.HTTP_200_OK,
     )
+=======
+
+######################################################################
+# READ A RECOMMENDATION
+######################################################################
+@app.route("/recommendations/<int:recommendation_id>", methods=["GET"])
+def get_recommendationss(recommendation_id):
+    """
+    Retrieve a single Recommendation
+
+    This endpoint will return a Recommendation based on it's id
+    """
+    app.logger.info("Request for recommendation with id: %s", recommendation_id)
+
+    recommendation = Recommendation.find(recommendation_id)
+    if not recommendation:
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Pet with id '{recommendation_id}' was not found.",
+        )
+
+    app.logger.info("Returning pet: %s", recommendation.name)
+    return jsonify(recommendation.serialize()), status.HTTP_200_OK
+
+
+######################################################################
+#  U T I L I T Y   F U N C T I O N S
+######################################################################
+
+
+######################################################################
+# Checks the ContentType of a request
+######################################################################
+def check_content_type(content_type):
+    """Checks that the media type is correct"""
+    if "Content-Type" not in request.headers:
+        app.logger.error("No Content-Type specified.")
+        error(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            f"Content-Type must be {content_type}",
+        )
+
+    if request.headers["Content-Type"] == content_type:
+        return
+
+    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
+    error(
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        f"Content-Type must be {content_type}",
+    )
+
+
+######################################################################
+# Logs error messages before aborting
+######################################################################
+def error(status_code, reason):
+    """Logs the error and then aborts"""
+    app.logger.error(reason)
+    abort(status_code, reason)
+>>>>>>> master
