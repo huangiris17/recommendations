@@ -15,10 +15,10 @@
 ######################################################################
 
 """
-Pet Store Service
+Recommendation Store Service
 
 This service implements a REST API that allows you to Create, Read, Update
-and Delete Pets from the inventory of pets in the PetShop
+and Delete Recommendations from the inventory of recommendations in the RecommendationShop
 """
 
 from flask import jsonify, request, url_for, abort
@@ -40,8 +40,19 @@ def index():
 
 
 ######################################################################
-#  R E S T   A P I   E N D P O I N T S
+# LIST ALL RECOMMENDATIONS
 ######################################################################
+@app.route("/recommendations", methods=["GET"])
+def list_recommendations():
+    """Returns all of the recommendations"""
+    app.logger.info("Request for recommendation list")
+
+    recommendations = []
+    recommendations = Recommendation.all()
+
+    results = [recommendation.serialize() for recommendation in recommendations]
+    app.logger.info("Returning %d recommendations", len(results))
+    return jsonify(results), status.HTTP_200_OK
 
 
 ######################################################################
@@ -60,10 +71,10 @@ def get_recommendationss(recommendation_id):
     if not recommendation:
         error(
             status.HTTP_404_NOT_FOUND,
-            f"Pet with id '{recommendation_id}' was not found.",
+            f"Recommendation with id '{recommendation_id}' was not found.",
         )
 
-    app.logger.info("Returning pet: %s", recommendation.name)
+    app.logger.info("Returning recommendation: %s", recommendation.name)
     return jsonify(recommendation.serialize()), status.HTTP_200_OK
 
 

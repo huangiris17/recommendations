@@ -82,3 +82,12 @@ class TestRecommendationService(TestCase):
     #     self.assertEqual(response.status_code, status.HTTP_200_OK)
     #     data = response.get_json()
     #     self.assertEqual(data["name"], test_recommendation.name)
+
+    # uncomment when `create_recommendations` endpoint is created
+    # def test_get_recommendation_list(self):
+    #     """It should Get a list of Recommendations"""
+    #     self._create_recommendations(5)
+    #     response = self.client.get(BASE_URL)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     data = response.get_json()
+    #     self.assertEqual(len(data), 5)
