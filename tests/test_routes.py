@@ -73,32 +73,30 @@ class TestRecommendationService(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-    # uncomment when `create_recommendations` endpoint is created
-    # def test_get_recommendation(self):
-    #     """It should Get a single Recommendation"""
-    #     # get the id of a recommendation
-    #     test_recommendation = self._create_recommendations(1)[0]
-    #     response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     data = response.get_json()
-    #     self.assertEqual(data["name"], test_recommendation.name)
+    def test_get_recommendation(self):
+        """It should Get a single Recommendation"""
+        # get the id of a recommendation
+        test_recommendation = self._create_recommendations(1)[0]
+        response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["name"], test_recommendation.name)
 
-    # uncomment when `create_recommendations` endpoint is created
-    # def test_get_recommendation_list(self):
-    #     """It should Get a list of Recommendations"""
-    #     self._create_recommendations(5)
-    #     response = self.client.get(BASE_URL)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     data = response.get_json()
-    #     self.assertEqual(len(data), 5)
+    def test_get_recommendation_list(self):
+        """It should Get a list of Recommendations"""
+        self._create_recommendations(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
 
-    # uncomment when `create_recommendations` endpoint is created
-    # def test_delete_recommendation(self):
-    #     """It should Delete a Recommendation"""
-    #     test_recommendation = self._create_recommendations(1)[0]
-    #     response = self.client.delete(f"{BASE_URL}/{test_recommendation.id}")
-    #     self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-    #     self.assertEqual(len(response.data), 0)
-    #     # make sure they are deleted
-    #     response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
-    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_delete_recommendation(self):
+        """It should Delete a Recommendation"""
+        test_recommendation = self._create_recommendations(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        # make sure they are deleted
+        response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
