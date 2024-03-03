@@ -23,7 +23,7 @@ and Delete Recommendations from the inventory of recommendations in the Recommen
 
 from flask import jsonify, request, url_for, abort
 from flask import current_app as app  # Import Flask application
-from service.models import db, Recommendation, RecommendationType
+from service.models import Recommendation, RecommendationType
 from service.common import status  # HTTP Status Codes
 
 
@@ -65,15 +65,13 @@ def create_recommendation():
     This endpoint will create a Recommendation based on the data in the body that is posted
     """
     app.logger.info("Request to create a recommendation")
-    data = request.get_json()
+    check_content_type("application/json")
 
+    data = request.get_json()
     try:
         recommendation_type = RecommendationType[data.get("type")]
     except KeyError:
-        return (
-            jsonify({"message": "Invalid recommendation type."}),
-            status.HTTP_400_BAD_REQUEST,
-        )
+        error(status.HTTP_400_BAD_REQUEST, "Invalid recommendation type.")
 
     existing_recommendation = Recommendation.query.filter_by(
         product_a_sku=data.get("product_a_sku"),
@@ -82,18 +80,22 @@ def create_recommendation():
     ).first()
 
     if existing_recommendation:
-        app.logger.info("Duplicate recommendation detected.")
-        return (
-            jsonify({"message": "Duplicate recommendation detected."}),
-            status.HTTP_400_BAD_REQUEST,
-        )
+        error(status.HTTP_400_BAD_REQUEST, "Duplicate recommendation detected.")
 
-    new_recommendation = Recommendation()
-    new_recommendation.deserialize(data)
-    db.session.add(new_recommendation)
-    db.session.commit()
-    app.logger.info(f"Recommendation {new_recommendation.id} created successfully.")
-    return jsonify(new_recommendation.serialize()), status.HTTP_201_CREATED
+    recommendation = Recommendation()
+    recommendation.deserialize(request.get_json())
+    recommendation.create()
+    message = recommendation.serialize()
+    location_url = url_for(
+        "get_recommendationss", recommendation_id=recommendation.id, _external=True
+    )
+
+    app.logger.info("Recommendation %d created.", recommendation.id)
+    return (
+        jsonify(message),
+        status.HTTP_201_CREATED,
+        {"Location": location_url},
+    )
 
 
 ######################################################################
