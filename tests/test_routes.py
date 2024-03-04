@@ -180,7 +180,7 @@ class TestRecommendationService(TestCase):
 
     def test_method_not_allowed(self):
         """Test if using an unsupported HTTP method returns a 405 Method Not Allowed"""
-        response = self.client.post("/recommendations/1")
+        response = self.client.put("/recommendations")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertIn("error", response.get_json())
         self.assertEqual(response.get_json()["error"], "Method not Allowed")

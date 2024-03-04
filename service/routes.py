@@ -142,7 +142,7 @@ def delete_recommendations(recommendation_id):
 
 
 ######################################################################
-# UPDATE AN EXISTING PET
+# UPDATE AN EXISTING RECOMMENDATION
 ######################################################################
 @app.route("/recommendations/<int:recommendation_id>", methods=["PUT"])
 def update_recommendations(recommendation_id):
