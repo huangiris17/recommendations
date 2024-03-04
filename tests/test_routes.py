@@ -145,6 +145,24 @@ class TestRecommendationService(TestCase):
             new_recommendation_data["type"], test_recommendation_data.type.name
         )
 
+    def test_update_recommendation(self):
+        """It should Update an existing Recommendation"""
+        # create a recommendation to update
+        test_recommendation = RecommendationFactory()
+        response = self.client.post(BASE_URL, json=test_recommendation.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # update the recommendation
+        new_recommendation = response.get_json()
+        logging.debug(new_recommendation)
+        new_recommendation["product_a_sku"] = "unknown"
+        response = self.client.put(
+            f"{BASE_URL}/{new_recommendation['id']}", json=new_recommendation
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_recommendation = response.get_json()
+        self.assertEqual(updated_recommendation["product_a_sku"], "unknown")
+
     def test_data_validation_error(self):
         """Test if submitting invalid data returns a data validation error"""
         invalid_data = {"product_a_sku": "123", "type": "InvalidType"}
@@ -162,7 +180,7 @@ class TestRecommendationService(TestCase):
 
     def test_method_not_allowed(self):
         """Test if using an unsupported HTTP method returns a 405 Method Not Allowed"""
-        response = self.client.put("/recommendations/1")
+        response = self.client.put("/recommendations")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertIn("error", response.get_json())
         self.assertEqual(response.get_json()["error"], "Method not Allowed")
