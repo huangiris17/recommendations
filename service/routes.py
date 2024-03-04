@@ -104,7 +104,7 @@ def create_recommendation():
 @app.route("/recommendations/<int:recommendation_id>", methods=["GET"])
 def get_recommendationss(recommendation_id):
     """
-    Retrieve a single Recommendation
+    Retrieves a single Recommendation
 
     This endpoint will return a Recommendation based on it's id
     """
@@ -127,7 +127,7 @@ def get_recommendationss(recommendation_id):
 @app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
 def delete_recommendations(recommendation_id):
     """
-    Delete a Recommendation
+    Deletes a Recommendation
 
     This endpoint will delete a Recommendation based the id specified in the path
     """
@@ -147,7 +147,7 @@ def delete_recommendations(recommendation_id):
 @app.route("/recommendations/<int:recommendation_id>", methods=["PUT"])
 def update_recommendations(recommendation_id):
     """
-    Update a Recommendation
+    Updates a Recommendation
 
     This endpoint will update a Recommendation based on the body that is posted
     """

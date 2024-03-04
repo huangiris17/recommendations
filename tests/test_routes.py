@@ -172,7 +172,7 @@ class TestRecommendationService(TestCase):
         self.assertEqual(response.get_json()["error"], "Bad Request")
 
     def test_not_found(self):
-        """Test if requesting a non-existent recommendation returns a 404 Not Found"""
+        """Test if requesting a non-existent Recommendation returns a 404 Not Found"""
         response = self.client.get("/recommendations/9999")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertIn("error", response.get_json())
@@ -195,7 +195,7 @@ class TestRecommendationService(TestCase):
         self.assertEqual(response.get_json()["error"], "Unsupported media type")
 
     def test_create_recommendation_duplicate(self):
-        """It should not create a duplicate recommendation"""
+        """It should not create a duplicate Recommendation"""
         recommendation_data = RecommendationFactory().serialize()
         # Create the first recommendation, which should succeed
         response = self.client.post(BASE_URL, json=recommendation_data)
