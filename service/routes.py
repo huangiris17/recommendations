@@ -142,6 +142,34 @@ def delete_recommendations(recommendation_id):
 
 
 ######################################################################
+# UPDATE AN EXISTING PET
+######################################################################
+@app.route("/recommendations/<int:recommendation_id>", methods=["PUT"])
+def update_recommendations(recommendation_id):
+    """
+    Update a Recommendation
+
+    This endpoint will update a Recommendation based the body that is posted
+    """
+    app.logger.info("Request to update recommendation with id: %d", recommendation_id)
+    check_content_type("application/json")
+
+    recommendation = Recommendation.find(recommendation_id)
+    if not recommendation:
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Recommendation with id: '{recommendation_id}' was not found.",
+        )
+
+    recommendation.deserialize(request.get_json())
+    recommendation.id = recommendation_id
+    recommendation.update()
+
+    app.logger.info("Recommendation with ID: %d updated.", recommendation.id)
+    return jsonify(recommendation.serialize()), status.HTTP_200_OK
+
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
