@@ -7,7 +7,7 @@ Based on [NYU DevOps Project Template](github.com/nyu-devops/project-template)
 
 ## Overview
 
-This course project is the back end for an eCommerce web site as a collection of RESTful services for a client. The class is divided into 9 squads, and each squad develops and runs a service end-to-end. This repo belongs to the Recommendations Squad who is responsible for managing relationships between two products.
+This course project is the backend for an eCommerce website as a collection of RESTful services. The class is divided into 9 squads, and each squad develops and runs a service end-to-end. This repo belongs to the Recommendations Squad who is responsible for managing relationships between two products.
 
 ## Contents
 
@@ -44,31 +44,39 @@ tests/                     - test cases package
 | Column | Description |
 | ------ | ----------- |
 | id | Integer, serves as the primary key |
-| product_a_sku |  String with no more than 10 characters, can not be null |
-| product_b_sku |  String with no more than 10 characters, can not be null |
-| type | one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"} |
+| product_a_sku |  String with no more than 10 characters, can not be null, represents product a |
+| product_b_sku |  String with no more than 10 characters, can not be null, represents product b |
+| type | one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"}, denotes the relationship between product a and product b |
+
+### Example Object
+
+```Python
+{'id': 1033, 'product_a_sku': 'uRfNZyNY', 'product_b_sku': 'svLLqnLF', 'type': 'ACCESSORY'}
+```
 
 ## Implemented Endpoints
 
+The root URL returns a guide to use Recommendation APIs.
+
 ### GET "/recommendations"
 
-Returns all of the Recommendations
+Returns all of the Recommendations.
 
 ### POST "/recommendations"
 
-Creates a Recommendation based on the data in the posted body
+Creates a Recommendation based on the data in the posted body.
 
 ### GET "/recommendations/\<int:recommendation_id\>"
 
-Retrieves a single Recommendation based on the id
+Retrieves a single Recommendation based on the id.
 
 ### DELETE "/recommendations/\<int:recommendation_id\>"
 
-Deletes a Recommendation based on the id specified in the path
+Deletes a Recommendation based on the id specified in the path.
 
 ### PUT "/recommendations/\<int:recommendation_id\>"
 
-Updates a Recommendation based on the posted body
+Updates a Recommendation based on the posted body.
 
 ## License
 
