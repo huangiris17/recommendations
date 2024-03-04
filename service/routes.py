@@ -87,7 +87,7 @@ def create_recommendations():
     recommendation.create()
     message = recommendation.serialize()
     location_url = url_for(
-        "get_recommendationss", recommendation_id=recommendation.id, _external=True
+        "get_recommendations", recommendation_id=recommendation.id, _external=True
     )
 
     app.logger.info("Recommendation %d created.", recommendation.id)
