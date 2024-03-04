@@ -149,7 +149,7 @@ def update_recommendations(recommendation_id):
     """
     Update a Recommendation
 
-    This endpoint will update a Recommendation based the body that is posted
+    This endpoint will update a Recommendation based on the body that is posted
     """
     app.logger.info("Request to update recommendation with id: %d", recommendation_id)
     check_content_type("application/json")
