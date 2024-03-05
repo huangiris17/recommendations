@@ -34,7 +34,21 @@ from service.common import status  # HTTP Status Codes
 def index():
     """Root URL response"""
     return (
-        "Reminder: return some useful information in json format about the service here",
+        jsonify(
+            name="Recommendations REST API Service",
+            version="1.0",
+            paths=[
+                (
+                    {
+                        "path": str(rule),
+                        "methods": list(rule.methods),
+                        "description": globals()[rule.endpoint].__doc__,
+                    }
+                )
+                for rule in app.url_map.iter_rules()
+                if rule.endpoint != "static"
+            ],
+        ),
         status.HTTP_200_OK,
     )
 
