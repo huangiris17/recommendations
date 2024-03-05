@@ -44,7 +44,7 @@ def index():
 ######################################################################
 @app.route("/recommendations", methods=["GET"])
 def list_recommendations():
-    """Returns all of the recommendations"""
+    """Returns all of the Recommendations"""
     app.logger.info("Request for recommendation list")
 
     recommendations = []
@@ -59,7 +59,7 @@ def list_recommendations():
 # CREATE A NEW RECOMMENDATION
 ######################################################################
 @app.route("/recommendations", methods=["POST"])
-def create_recommendation():
+def create_recommendations():
     """
     Creates a Recommendation
     This endpoint will create a Recommendation based on the data in the body that is posted
@@ -87,7 +87,7 @@ def create_recommendation():
     recommendation.create()
     message = recommendation.serialize()
     location_url = url_for(
-        "get_recommendationss", recommendation_id=recommendation.id, _external=True
+        "get_recommendations", recommendation_id=recommendation.id, _external=True
     )
 
     app.logger.info("Recommendation %d created.", recommendation.id)
@@ -102,11 +102,11 @@ def create_recommendation():
 # READ A RECOMMENDATION
 ######################################################################
 @app.route("/recommendations/<int:recommendation_id>", methods=["GET"])
-def get_recommendationss(recommendation_id):
+def get_recommendations(recommendation_id):
     """
     Retrieves a single Recommendation
 
-    This endpoint will return a Recommendation based on it's id
+    This endpoint will return a Recommendation based on its id
     """
     app.logger.info("Request for recommendation with id: %s", recommendation_id)
 
