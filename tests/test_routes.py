@@ -69,9 +69,22 @@ class TestRecommendationService(TestCase):
     # pylint: disable=too-many-public-methods
 
     def test_index(self):
-        """It should call the home page"""
+        """It should return information about endpoints"""
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertIn("name", resp.json)
+        self.assertIn("version", resp.json)
+        self.assertIn("paths", resp.json)
+        self.assertEqual(
+            len(list(resp.json["paths"])),
+            len(
+                list(
+                    filter(
+                        lambda rule: rule.endpoint != "static", app.url_map.iter_rules()
+                    )
+                )
+            ),
+        )
 
     def test_get_recommendation(self):
         """It should Get a single Recommendation"""
