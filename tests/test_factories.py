@@ -1,3 +1,7 @@
+"""
+Test Cases for Factories
+"""
+
 from unittest import TestCase
 from tests.factories import RecommendationFactory
 from service.models import RecommendationType
