@@ -14,4 +14,4 @@ class TestFactories(TestCase):
         self.assertTrue(recommendation.id is not None)
         self.assertTrue(recommendation.product_a_sku is not None)
         self.assertTrue(recommendation.product_b_sku is not None)
-        self.assertTrue(recommendation.type in RecommendationType)
+        self.assertTrue(recommendation.recommendation_type in RecommendationType)

@@ -95,7 +95,9 @@ class TestRecommendationService(TestCase):
         data = response.get_json()
         self.assertEqual(data["product_a_sku"], test_recommendation.product_a_sku)
         self.assertEqual(data["product_b_sku"], test_recommendation.product_b_sku)
-        self.assertEqual(data["type"], test_recommendation.type.name)
+        self.assertEqual(
+            data["recommendation_type"], test_recommendation.recommendation_type.name
+        )
 
     def test_get_recommendation_list(self):
         """It should Get a list of Recommendations"""
@@ -140,7 +142,10 @@ class TestRecommendationService(TestCase):
         self.assertEqual(
             new_recommendation["product_b_sku"], test_recommendation_data.product_b_sku
         )
-        self.assertEqual(new_recommendation["type"], test_recommendation_data.type.name)
+        self.assertEqual(
+            new_recommendation["recommendation_type"],
+            test_recommendation_data.recommendation_type.name,
+        )
 
         # Check that the location header was correct
         response = self.client.get(location)
@@ -155,7 +160,8 @@ class TestRecommendationService(TestCase):
             test_recommendation_data.product_b_sku,
         )
         self.assertEqual(
-            new_recommendation_data["type"], test_recommendation_data.type.name
+            new_recommendation_data["recommendation_type"],
+            test_recommendation_data.recommendation_type.name,
         )
 
     def test_update_recommendation(self):

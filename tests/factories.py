@@ -18,4 +18,4 @@ class RecommendationFactory(factory.Factory):
     id = factory.Sequence(lambda n: n)
     product_a_sku = FuzzyText(length=8)
     product_b_sku = FuzzyText(length=8)
-    type = FuzzyChoice(choices=RecommendationType)
+    recommendation_type = FuzzyChoice(choices=RecommendationType)

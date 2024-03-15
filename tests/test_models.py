@@ -70,7 +70,7 @@ class TestRecommendationModel(TestCaseBase):
         recommendation = Recommendation(
             product_a_sku="AA0001",
             product_b_sku="AA0002",
-            type=RecommendationType.UP_SELL,
+            recommendation_type=RecommendationType.UP_SELL,
         )
         self.assertEqual(
             str(recommendation), "<Recommendation AA0001-AA0002 id=[None]>"
@@ -79,24 +79,28 @@ class TestRecommendationModel(TestCaseBase):
         self.assertEqual(recommendation.id, None)
         self.assertEqual(recommendation.product_a_sku, "AA0001")
         self.assertEqual(recommendation.product_b_sku, "AA0002")
-        self.assertEqual(recommendation.type, RecommendationType.UP_SELL)
+        self.assertEqual(recommendation.recommendation_type, RecommendationType.UP_SELL)
 
         # test new recommendation
         recommendation = Recommendation(
             product_a_sku="AB1111",
             product_b_sku="BA2222",
-            type=RecommendationType.CROSS_SELL,
+            recommendation_type=RecommendationType.CROSS_SELL,
         )
         self.assertEqual(recommendation.product_a_sku, "AB1111")
         self.assertEqual(recommendation.product_b_sku, "BA2222")
-        self.assertEqual(recommendation.type, RecommendationType.CROSS_SELL)
+        self.assertEqual(
+            recommendation.recommendation_type, RecommendationType.CROSS_SELL
+        )
 
     def test_add_recommendation(self):
         """It should create a recommendation and add it to the database"""
         recommendations = Recommendation.all()
         self.assertEqual(recommendations, [])
         recommendation = Recommendation(
-            product_a_sku="A1", product_b_sku="B1", type=RecommendationType.UP_SELL
+            product_a_sku="A1",
+            product_b_sku="B1",
+            recommendation_type=RecommendationType.UP_SELL,
         )
         self.assertTrue(recommendation is not None)
         self.assertEqual(recommendation.id, None)
@@ -108,7 +112,9 @@ class TestRecommendationModel(TestCaseBase):
         self.assertEqual(len(recommendations), 1)
         self.assertEqual(recommendations[0].product_a_sku, "A1")
         self.assertEqual(recommendations[0].product_b_sku, "B1")
-        self.assertEqual(recommendations[0].type, RecommendationType.UP_SELL)
+        self.assertEqual(
+            recommendations[0].recommendation_type, RecommendationType.UP_SELL
+        )
 
     def test_read_recommendation(self):
         """It should Read a Recommendation"""
@@ -127,7 +133,9 @@ class TestRecommendationModel(TestCaseBase):
         self.assertEqual(
             found_recommendation.product_b_sku, recommendation.product_b_sku
         )
-        self.assertEqual(found_recommendation.type, recommendation.type)
+        self.assertEqual(
+            found_recommendation.recommendation_type, recommendation.recommendation_type
+        )
 
     def test_update_recommendation(self):
         """It should Update a Recommendation"""
@@ -192,8 +200,10 @@ class TestRecommendationModel(TestCaseBase):
         self.assertEqual(data["product_a_sku"], recommendation.product_a_sku)
         self.assertIn("product_b_sku", data)
         self.assertEqual(data["product_b_sku"], recommendation.product_b_sku)
-        self.assertIn("type", data)
-        self.assertEqual(data["type"], recommendation.type.name)
+        self.assertIn("recommendation_type", data)
+        self.assertEqual(
+            data["recommendation_type"], recommendation.recommendation_type.name
+        )
 
     def test_deserialize_recommendation(self):
         """It should de-serialize a Recommendation"""
@@ -204,7 +214,10 @@ class TestRecommendationModel(TestCaseBase):
         self.assertEqual(recommendation.id, None)
         self.assertEqual(recommendation.product_a_sku, data["product_a_sku"])
         self.assertEqual(recommendation.product_b_sku, data["product_b_sku"])
-        self.assertEqual(recommendation.type, getattr(RecommendationType, data["type"]))
+        self.assertEqual(
+            recommendation.recommendation_type,
+            getattr(RecommendationType, data["recommendation_type"]),
+        )
 
     def test_deserialize_missing_data(self):
         """It should not deserialize a Recommendation with missing data"""
@@ -236,7 +249,7 @@ class TestRecommendationModel(TestCaseBase):
         """It should not deserialize a bad type attribute"""
         test_recommendation = RecommendationFactory()
         data = test_recommendation.serialize()
-        data["type"] = "cross_sale"  # wrong case
+        data["recommendation_type"] = "cross_sale"  # wrong case
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
 
@@ -289,7 +302,9 @@ class TestModelQueries(TestCaseBase):
         self.assertEqual(recommendation.id, recommendations[1].id)
         self.assertEqual(recommendation.product_a_sku, recommendations[1].product_a_sku)
         self.assertEqual(recommendation.product_b_sku, recommendations[1].product_b_sku)
-        self.assertEqual(recommendation.type, recommendations[1].type)
+        self.assertEqual(
+            recommendation.recommendation_type, recommendations[1].recommendation_type
+        )
 
     def test_find_by_product_a_sku(self):
         """It should Find Recommendations by product_a_sku"""
@@ -332,15 +347,15 @@ class TestModelQueries(TestCaseBase):
         recommendations = RecommendationFactory.create_batch(10)
         for recommendation in recommendations:
             recommendation.create()
-        recommendation_type = recommendations[0].type
+        recommendation_type = recommendations[0].recommendation_type
         count = len(
             [
                 recommendation
                 for recommendation in recommendations
-                if recommendation.type == recommendation_type
+                if recommendation.recommendation_type == recommendation_type
             ]
         )
         found = Recommendation.find_by_type(recommendation_type)
         self.assertEqual(found.count(), count)
         for recommendation in found:
-            self.assertEqual(recommendation.type, recommendation_type)
+            self.assertEqual(recommendation.recommendation_type, recommendation_type)

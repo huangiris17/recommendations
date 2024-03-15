@@ -49,7 +49,7 @@ class Recommendation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_a_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
     product_b_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
-    type = db.Column(db.Enum(RecommendationType), nullable=False)
+    recommendation_type = db.Column(db.Enum(RecommendationType), nullable=False)
 
     name = f"{product_a_sku}-{product_b_sku}"
 
@@ -105,7 +105,7 @@ class Recommendation(db.Model):
             "id": self.id,
             "product_a_sku": self.product_a_sku,
             "product_b_sku": self.product_b_sku,
-            "type": self.type.name,
+            "recommendation_type": self.recommendation_type.name,
         }
 
     def deserialize(self, data):
@@ -123,8 +123,8 @@ class Recommendation(db.Model):
             if len(data["product_b_sku"]) > SKU_CHAR_LIMIT:
                 raise TextColumnLimitExceededError("product_b_sku")
             self.product_b_sku = data["product_b_sku"]
-            self.type = getattr(
-                RecommendationType, data["type"]
+            self.recommendation_type = getattr(
+                RecommendationType, data["recommendation_type"]
             )  # create enum from string
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
@@ -182,15 +182,15 @@ class Recommendation(db.Model):
         return cls.query.filter(cls.product_b_sku == sku)
 
     @classmethod
-    def find_by_type(cls, type: RecommendationType) -> list:
+    def find_by_type(cls, recommendation_type: RecommendationType) -> list:
         """Returns all Recommendations by their Type
 
-        :param type: RecommendationType
-        :type available: enum
+        :param recommendation_type: RecommendationType
+        :recommendation_type available: enum
 
         :return: a collection of Recommendations that are of requested type
         :rtype: list
 
         """
-        logger.info("Processing type query for %s ...", type.name)
-        return cls.query.filter(cls.type == type)
+        logger.info("Processing type query for %s ...", recommendation_type.name)
+        return cls.query.filter(cls.recommendation_type == recommendation_type)
