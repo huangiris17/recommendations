@@ -83,14 +83,14 @@ def create_recommendations():
 
     data = request.get_json()
     try:
-        recommendation_type = RecommendationType[data.get("type")]
+        recommendation_type = RecommendationType[data.get("recommendation_type")]
     except KeyError:
         error(status.HTTP_400_BAD_REQUEST, "Invalid recommendation type.")
 
     existing_recommendation = Recommendation.query.filter_by(
         product_a_sku=data.get("product_a_sku"),
         product_b_sku=data.get("product_b_sku"),
-        type=recommendation_type,
+        recommendation_type=recommendation_type,
     ).first()
 
     if existing_recommendation:

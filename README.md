@@ -2,6 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
+[![Build Status](https://github.com/CSCI-GA-2820-SP24-003/recommendations/actions/workflows/ci.yml/badge.svg)](https://github.com/CSCI-GA-2820-SP24-003/recommendations/actions)
 
 Based on [NYU DevOps Project Template](github.com/nyu-devops/project-template)
 
@@ -46,12 +47,12 @@ tests/                     - test cases package
 | id | Integer, serves as the primary key |
 | product_a_sku |  String with no more than 10 characters, can not be null, represents product a |
 | product_b_sku |  String with no more than 10 characters, can not be null, represents product b |
-| type | one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"}, denotes the relationship between product a and product b |
+| recommendation_type | one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"}, denotes the relationship between product a and product b |
 
 ### Example Object
 
 ```Python
-{'id': 1033, 'product_a_sku': 'uRfNZyNY', 'product_b_sku': 'svLLqnLF', 'type': 'ACCESSORY'}
+{'id': 1033, 'product_a_sku': 'uRfNZyNY', 'product_b_sku': 'svLLqnLF', 'recommendation_type': 'ACCESSORY'}
 ```
 
 ## Implemented Endpoints
