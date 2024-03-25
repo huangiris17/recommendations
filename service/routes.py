@@ -94,7 +94,7 @@ def create_recommendations():
     ).first()
 
     if existing_recommendation:
-        error(status.HTTP_400_BAD_REQUEST, "Duplicate recommendation detected.")
+        return error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
 
     recommendation = Recommendation()
     recommendation.deserialize(request.get_json())
