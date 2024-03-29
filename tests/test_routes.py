@@ -223,3 +223,6 @@ class TestRecommendationService(TestCase):
         # Attempt to create a duplicate recommendation, which should fail
         response = self.client.post(BASE_URL, json=recommendation_data)
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+        self.assertIn(
+            "Duplicate recommendation detected.", response.get_json()["message"]
+        )
