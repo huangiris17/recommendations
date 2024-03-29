@@ -23,7 +23,7 @@ and Delete Recommendations from the inventory of recommendations in the Recommen
 
 from flask import jsonify, request, url_for, abort
 from flask import current_app as app  # Import Flask application
-from service.models import Recommendation, RecommendationType
+from service.models import Recommendation
 from service.common import status  # HTTP Status Codes
 
 
