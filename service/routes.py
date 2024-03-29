@@ -81,12 +81,6 @@ def create_recommendations():
     app.logger.info("Request to create a recommendation")
     check_content_type("application/json")
 
-    data = request.get_json()
-    # try:
-    #     recommendation_type = RecommendationType[data.get("recommendation_type")]
-    # except KeyError:
-    #     error(status.HTTP_400_BAD_REQUEST, "Invalid recommendation type.")
-
     recommendation = Recommendation()
     recommendation.deserialize(request.get_json())
 
