@@ -50,6 +50,7 @@ class Recommendation(db.Model):
     product_a_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
     product_b_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
     recommendation_type = db.Column(db.Enum(RecommendationType), nullable=False)
+    likes = db.Column(db.Integer, nullable=False, default=0)
 
     name = f"{product_a_sku}-{product_b_sku}"
 
