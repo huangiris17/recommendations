@@ -253,6 +253,12 @@ class TestRecommendationModel(TestCaseBase):
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
 
+    def test_likes_counter_initialization_to_0(self):
+        """It should initialize Recommendation with likes counter set to 0"""
+        recommendation = RecommendationFactory()
+        recommendation.create()
+        self.assertEqual(recommendation.likes, 0)
+
 
 ######################################################################
 #  T E S T   E X C E P T I O N   H A N D L E R S
