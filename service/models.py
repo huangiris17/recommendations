@@ -107,6 +107,7 @@ class Recommendation(db.Model):
             "product_a_sku": self.product_a_sku,
             "product_b_sku": self.product_b_sku,
             "recommendation_type": self.recommendation_type.name,
+            "likes": self.likes,
         }
 
     def deserialize(self, data):
@@ -127,6 +128,13 @@ class Recommendation(db.Model):
             self.recommendation_type = getattr(
                 RecommendationType, data["recommendation_type"]
             )  # create enum from string
+
+            if isinstance(data["likes"], int):
+                self.likes = data["likes"]
+            else:
+                raise DataValidationError(
+                    "Invalid type for integer [likes]: " + str(type(data["likes"]))
+                )
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
