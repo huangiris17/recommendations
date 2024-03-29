@@ -368,9 +368,19 @@ class TestModelQueries(TestCaseBase):
             recommendation_type=RecommendationType.UP_SELL,
         )
         recommendation.create()
+        self.assertTrue(recommendation.exists())
 
-        self.assertTrue(Recommendation.exists("A1", "B1", RecommendationType.UP_SELL))
         self.assertFalse(
-            Recommendation.exists("A1", "B1", RecommendationType.CROSS_SELL)
+            Recommendation(
+                product_a_sku="A1",
+                product_b_sku="B1",
+                recommendation_type=RecommendationType.CROSS_SELL,
+            ).exists()
         )
-        self.assertTrue(Recommendation.exists("B1", "A1", RecommendationType.UP_SELL))
+        self.assertFalse(
+            Recommendation(
+                product_a_sku="B1",
+                product_b_sku="A1",
+                recommendation_type=RecommendationType.UP_SELL,
+            ).exists()
+        )

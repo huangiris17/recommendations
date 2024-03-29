@@ -82,22 +82,17 @@ def create_recommendations():
     check_content_type("application/json")
 
     data = request.get_json()
-    try:
-        recommendation_type = RecommendationType[data.get("recommendation_type")]
-    except KeyError:
-        error(status.HTTP_400_BAD_REQUEST, "Invalid recommendation type.")
-
-    existing_recommendation = Recommendation.query.filter_by(
-        product_a_sku=data.get("product_a_sku"),
-        product_b_sku=data.get("product_b_sku"),
-        recommendation_type=recommendation_type,
-    ).first()
-
-    if existing_recommendation:
-        error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
+    # try:
+    #     recommendation_type = RecommendationType[data.get("recommendation_type")]
+    # except KeyError:
+    #     error(status.HTTP_400_BAD_REQUEST, "Invalid recommendation type.")
 
     recommendation = Recommendation()
     recommendation.deserialize(request.get_json())
+
+    if recommendation.exists():
+        error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
+
     recommendation.create()
     message = recommendation.serialize()
     location_url = url_for(
