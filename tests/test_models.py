@@ -246,14 +246,16 @@ class TestRecommendationModel(TestCaseBase):
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
 
-    def test_deserialize_bad_type(self):
-        """It should not deserialize a bad type attribute"""
+    def test_deserialize_bad_recommendation_type(self):
+        """It should not deserialize a bad recommendation type attribute"""
         test_recommendation = RecommendationFactory()
         data = test_recommendation.serialize()
         data["recommendation_type"] = "cross_sale"  # wrong case
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
 
+    def test_deserialize_bad_likes(self):
+        """It should not deserialize invalid likes attribute"""
         # bad likes type
         test_recommendation = RecommendationFactory()
         data = test_recommendation.serialize()
@@ -267,6 +269,14 @@ class TestRecommendationModel(TestCaseBase):
         data["likes"] = -2
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+        # empty likes
+        test_recommendation = RecommendationFactory()
+        data = test_recommendation.serialize()
+        data["likes"] = None
+        recommendation = Recommendation()
+        deserialized_recommendation = recommendation.deserialize(data)
+        self.assertEqual(deserialized_recommendation["likes"], None)
 
     def test_likes_default_initialization(self):
         """It should initialize Recommendation with likes counter set to 0"""

@@ -118,7 +118,7 @@ class Recommendation(db.Model):
             "likes": self.likes,
         }
 
-    def deserialize(self, data):
+    def deserialize(self, data):  # noqa: C901
         """
         Deserializes a Recommendation from a dictionary
 
@@ -137,12 +137,12 @@ class Recommendation(db.Model):
                 RecommendationType, data["recommendation_type"]
             )  # create enum from string
 
-            if "likes" not in data:
+            if "likes" not in data or data["likes"] is None:
                 self.likes = 0
                 return self
 
             likes = data["likes"]
-            if likes is not isinstance(likes, int):
+            if not isinstance(likes, int):
                 raise DataValidationError(
                     "Invalid type for integer [likes]: " + str(type(likes))
                 )
