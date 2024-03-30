@@ -184,11 +184,24 @@ class TestRecommendationService(TestCase):
 
     def test_data_validation_error(self):
         """Test if submitting invalid data returns a data validation error"""
-        invalid_data = {"product_a_sku": "123", "type": "InvalidType"}
+        # test missing field
+        invalid_data = {"product_a_sku": "123", "recommendation_type": "UP_SELL"}
         response = self.client.post("/recommendations", json=invalid_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("error", response.get_json())
         self.assertEqual(response.get_json()["error"], "Bad Request")
+
+        # test invalid recommendation_type
+        invalid_data = {
+            "product_a_sku": "123",
+            "product_b_sku": "123",
+            "recommendation_type": "InvalidType",
+        }
+        response = self.client.post("/recommendations", json=invalid_data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.get_json())
+        self.assertEqual(response.get_json()["error"], "Bad Request")
+        self.assertIn("Invalid attribute: InvalidType", response.get_json()["message"])
 
     def test_not_found(self):
         """Test if requesting a non-existent Recommendation returns a 404 Not Found"""

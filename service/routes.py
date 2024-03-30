@@ -23,7 +23,7 @@ and Delete Recommendations from the inventory of recommendations in the Recommen
 
 from flask import jsonify, request, url_for, abort
 from flask import current_app as app  # Import Flask application
-from service.models import Recommendation, RecommendationType
+from service.models import Recommendation
 from service.common import status  # HTTP Status Codes
 
 
@@ -81,23 +81,12 @@ def create_recommendations():
     app.logger.info("Request to create a recommendation")
     check_content_type("application/json")
 
-    data = request.get_json()
-    try:
-        recommendation_type = RecommendationType[data.get("recommendation_type")]
-    except KeyError:
-        error(status.HTTP_400_BAD_REQUEST, "Invalid recommendation type.")
-
-    existing_recommendation = Recommendation.query.filter_by(
-        product_a_sku=data.get("product_a_sku"),
-        product_b_sku=data.get("product_b_sku"),
-        recommendation_type=recommendation_type,
-    ).first()
-
-    if existing_recommendation:
-        error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
-
     recommendation = Recommendation()
     recommendation.deserialize(request.get_json())
+
+    if recommendation.exists():
+        error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
+
     recommendation.create()
     message = recommendation.serialize()
     location_url = url_for(
