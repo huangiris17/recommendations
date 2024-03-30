@@ -166,8 +166,16 @@ class Recommendation(db.Model):
 
     def add_like(self):
         """Increments like counter by one"""
-        logger.info("Adding like to %s", self.name)
+        logger.info("Adding like for %s", self.name)
         self.likes += 1
+        self.update()
+
+    def remove_like(self):
+        """Decrements like counter by one"""
+        logger.info("Decrementing like for %s", self.name)
+        if self.likes <= 0:
+            raise DataValidationError("Likes cannot be negative")
+        self.likes -= 1
         self.update()
 
     ##################################################
