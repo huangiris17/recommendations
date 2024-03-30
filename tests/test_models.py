@@ -301,11 +301,17 @@ class TestRecommendationModel(TestCaseBase):
         )
         self.assertRaises(DataValidationError, recommendation.create)
 
-    # def test_add_like(self):
-    #     """It should increase like field by 1"""
-    #     recommendation = RecommendationFactory()
-    #     recommendation.create()
-    #     self.assertEqual(recommendation.likes, 0)
+    def test_add_like(self):
+        """It should increase like field by 1"""
+        recommendation = RecommendationFactory()
+        recommendation.create()
+        self.assertEqual(recommendation.likes, 0)
+
+        recommendation.add_like()
+        self.assertEqual(recommendation.likes, 1)
+
+        recommendation.add_like()
+        self.assertEqual(recommendation.likes, 2)
 
 
 ######################################################################
