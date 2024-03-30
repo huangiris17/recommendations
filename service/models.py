@@ -66,6 +66,10 @@ class Recommendation(db.Model):
         logger.info("Creating %s", self.name)
         self.id = None  # pylint: disable=invalid-name
         try:
+            if self.likes is not None and self.likes < 0:
+                # don't allow negative likes
+                raise DataValidationError("Likes cannot be negative: " + self.likes)
+
             db.session.add(self)
             db.session.commit()
         except Exception as e:
@@ -82,6 +86,10 @@ class Recommendation(db.Model):
             if self.id is None:
                 # don't allow primary key to be set to None
                 raise PrimaryKeyNotSetError()
+
+            if self.likes is not None and self.likes < 0:
+                # don't allow negative likes
+                raise DataValidationError("Likes cannot be negative: " + self.likes)
 
             db.session.commit()
         except Exception as e:
@@ -129,12 +137,14 @@ class Recommendation(db.Model):
                 RecommendationType, data["recommendation_type"]
             )  # create enum from string
 
-            if isinstance(data["likes"], int):
-                self.likes = data["likes"]
-            else:
+            likes = data["likes"]
+            if likes is not None and not isinstance(likes, int):
                 raise DataValidationError(
-                    "Invalid type for integer [likes]: " + str(type(data["likes"]))
+                    "Invalid type for integer [likes]: " + str(type(likes))
                 )
+            if likes is not None and likes < 0:
+                raise DataValidationError("Likes cannot be negative: " + likes)
+            self.likes = likes
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
