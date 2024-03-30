@@ -360,6 +360,31 @@ class TestModelQueries(TestCaseBase):
         for recommendation in found:
             self.assertEqual(recommendation.recommendation_type, recommendation_type)
 
+    def test_exists(self):
+        """It should return True if recommendation exists in the database, false otherwise"""
+        recommendation = Recommendation(
+            product_a_sku="A1",
+            product_b_sku="B1",
+            recommendation_type=RecommendationType.UP_SELL,
+        )
+        recommendation.create()
+        self.assertTrue(recommendation.exists())
+
+        self.assertFalse(
+            Recommendation(
+                product_a_sku="A1",
+                product_b_sku="B1",
+                recommendation_type=RecommendationType.CROSS_SELL,
+            ).exists()
+        )
+        self.assertFalse(
+            Recommendation(
+                product_a_sku="B1",
+                product_b_sku="A1",
+                recommendation_type=RecommendationType.UP_SELL,
+            ).exists()
+        )
+
     def test_find_by_product_a_sku_and_type(self):
         """It should filter recommendations by product_a_sku and type and return them ordered by likes"""
         Recommendation(
