@@ -313,6 +313,21 @@ class TestRecommendationModel(TestCaseBase):
         recommendation.add_like()
         self.assertEqual(recommendation.likes, 2)
 
+    def test_remove_like(self):
+        """It should decrement like field by 1 and don't allow likes to become negative"""
+        recommendation = RecommendationFactory()
+        recommendation.likes = 2
+        recommendation.create()
+        self.assertEqual(recommendation.likes, 2)
+
+        recommendation.remove_like()
+        self.assertEqual(recommendation.likes, 1)
+
+        recommendation.remove_like()
+        self.assertEqual(recommendation.likes, 0)
+
+        self.assertRaises(DataValidationError, recommendation.remove_like)
+
 
 ######################################################################
 #  T E S T   E X C E P T I O N   H A N D L E R S
