@@ -137,12 +137,16 @@ class Recommendation(db.Model):
                 RecommendationType, data["recommendation_type"]
             )  # create enum from string
 
+            if "likes" not in data:
+                self.likes = 0
+                return self
+
             likes = data["likes"]
-            if likes is not None and not isinstance(likes, int):
+            if likes is not isinstance(likes, int):
                 raise DataValidationError(
                     "Invalid type for integer [likes]: " + str(type(likes))
                 )
-            if likes is not None and likes < 0:
+            if likes < 0:
                 raise DataValidationError("Likes cannot be negative: " + likes)
             self.likes = likes
         except AttributeError as error:
