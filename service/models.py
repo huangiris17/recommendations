@@ -164,6 +164,12 @@ class Recommendation(db.Model):
 
         return self
 
+    def add_like(self):
+        """Increments like counter by one"""
+        logger.info("Adding like to %s", self.name)
+        self.likes += 1
+        self.update()
+
     ##################################################
     # CLASS METHODS
     ##################################################
