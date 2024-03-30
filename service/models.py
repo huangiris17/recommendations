@@ -50,6 +50,7 @@ class Recommendation(db.Model):
     product_a_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
     product_b_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
     recommendation_type = db.Column(db.Enum(RecommendationType), nullable=False)
+    likes = db.Column(db.Integer, default=0, nullable=False)
 
     name = f"{product_a_sku}-{product_b_sku}"
 
@@ -194,3 +195,14 @@ class Recommendation(db.Model):
         """
         logger.info("Processing type query for %s ...", recommendation_type.name)
         return cls.query.filter(cls.recommendation_type == recommendation_type)
+
+    @classmethod
+    def find_by_product_a_sku_and_type(cls, product_a_sku, recommendation_type):
+        """Find recommendations by product A SKU and type, ordered by likes."""
+        return (
+            cls.query.filter_by(
+                product_a_sku=product_a_sku, recommendation_type=recommendation_type
+            )
+            .order_by(cls.likes.desc())
+            .all()
+        )
