@@ -213,6 +213,12 @@ class Recommendation(db.Model):
     @classmethod
     def find_by_product_a_sku_and_type(cls, product_a_sku, recommendation_type):
         """Find recommendations by product A SKU and type, ordered by likes."""
+        logger.info(
+            "Processing type query for %s and %s...",
+            product_a_sku,
+            recommendation_type.name,
+        )
+
         return (
             cls.query.filter_by(
                 product_a_sku=product_a_sku, recommendation_type=recommendation_type
