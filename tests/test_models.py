@@ -276,7 +276,7 @@ class TestRecommendationModel(TestCaseBase):
         data["likes"] = None
         recommendation = Recommendation()
         deserialized_recommendation = recommendation.deserialize(data)
-        self.assertEqual(deserialized_recommendation["likes"], None)
+        self.assertEqual(deserialized_recommendation.likes, 0)
 
     def test_likes_default_initialization(self):
         """It should initialize Recommendation with likes counter set to 0"""
@@ -444,3 +444,66 @@ class TestModelQueries(TestCaseBase):
         self.assertEqual(found.count(), count)
         for recommendation in found:
             self.assertEqual(recommendation.recommendation_type, recommendation_type)
+
+    def test_exists(self):
+        """It should return True if recommendation exists in the database, false otherwise"""
+        recommendation = Recommendation(
+            product_a_sku="A1",
+            product_b_sku="B1",
+            recommendation_type=RecommendationType.UP_SELL,
+        )
+        recommendation.create()
+        self.assertTrue(recommendation.exists())
+
+        self.assertFalse(
+            Recommendation(
+                product_a_sku="A1",
+                product_b_sku="B1",
+                recommendation_type=RecommendationType.CROSS_SELL,
+            ).exists()
+        )
+        self.assertFalse(
+            Recommendation(
+                product_a_sku="B1",
+                product_b_sku="A1",
+                recommendation_type=RecommendationType.UP_SELL,
+            ).exists()
+        )
+
+    def test_find_by_product_a_sku_and_type(self):
+        """It should filter recommendations by product_a_sku and type and return them ordered by likes"""
+        Recommendation(
+            product_a_sku="SKU1",
+            product_b_sku="SKU2",
+            recommendation_type=RecommendationType.UP_SELL,
+            likes=10,
+        ).create()
+        Recommendation(
+            product_a_sku="SKU1",
+            product_b_sku="SKU3",
+            recommendation_type=RecommendationType.UP_SELL,
+            likes=20,
+        ).create()
+        Recommendation(
+            product_a_sku="SKU1",
+            product_b_sku="SKU4",
+            recommendation_type=RecommendationType.CROSS_SELL,
+            likes=15,
+        ).create()
+
+        # Call the method under test
+        results = Recommendation.find_by_product_a_sku_and_type(
+            "SKU1", RecommendationType.UP_SELL
+        )
+
+        # Assert the results are as expected
+        self.assertEqual(len(results), 2)
+        self.assertTrue(
+            all(
+                rec.recommendation_type == RecommendationType.UP_SELL for rec in results
+            )
+        )
+        self.assertEqual(
+            results[0].product_b_sku, "SKU3"
+        )  # Assuming the first result is the most liked
+        self.assertEqual(results[1].product_b_sku, "SKU2")

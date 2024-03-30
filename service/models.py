@@ -108,6 +108,20 @@ class Recommendation(db.Model):
             logger.error("Error deleting record: %s", self)
             raise DataValidationError(e) from e
 
+    def exists(self) -> bool:
+        """Returns True if Recommendation with given data exists in the database, false otherwise"""
+        logger.info("Checking if exists, %s", self.serialize())
+        return (
+            db.session.query(Recommendation)
+            .filter_by(
+                product_a_sku=self.product_a_sku,
+                product_b_sku=self.product_b_sku,
+                recommendation_type=self.recommendation_type,
+            )
+            .first()
+            is not None
+        )
+
     def serialize(self):
         """Serializes a Recommendation into a dictionary"""
         return {
@@ -231,3 +245,20 @@ class Recommendation(db.Model):
         """
         logger.info("Processing type query for %s ...", recommendation_type.name)
         return cls.query.filter(cls.recommendation_type == recommendation_type)
+
+    @classmethod
+    def find_by_product_a_sku_and_type(cls, product_a_sku, recommendation_type):
+        """Find recommendations by product A SKU and type, ordered by likes."""
+        logger.info(
+            "Processing type query for %s and %s...",
+            product_a_sku,
+            recommendation_type.name,
+        )
+
+        return (
+            cls.query.filter_by(
+                product_a_sku=product_a_sku, recommendation_type=recommendation_type
+            )
+            .order_by(cls.likes.desc())
+            .all()
+        )
