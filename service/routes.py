@@ -23,7 +23,7 @@ and Delete Recommendations from the inventory of recommendations in the Recommen
 
 from flask import jsonify, request, url_for, abort
 from flask import current_app as app  # Import Flask application
-from service.models import Recommendation
+from service.models import Recommendation, RecommendationType
 from service.common import status  # HTTP Status Codes
 
 
@@ -62,7 +62,22 @@ def list_recommendations():
     app.logger.info("Request for recommendation list")
 
     recommendations = []
-    recommendations = Recommendation.all()
+    # See if any query filters were passed in
+    a_sku = request.args.get("product_a_sku")
+    recommendation_type = request.args.get("recommendation_type")
+
+    if a_sku and recommendation_type:
+        type_value = getattr(RecommendationType, recommendation_type.upper())
+        recommendations = Recommendation.find_by_product_a_sku_and_type(
+            a_sku, type_value
+        )
+    elif a_sku:
+        recommendations = Recommendation.find_by_product_a_sku(a_sku)
+    elif recommendation_type:
+        type_value = getattr(RecommendationType, recommendation_type.upper())
+        recommendations = Recommendation.find_by_type(type_value)
+    else:
+        recommendations = Recommendation.all()
 
     results = [recommendation.serialize() for recommendation in recommendations]
     app.logger.info("Returning %d recommendations", len(results))
