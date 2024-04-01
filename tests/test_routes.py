@@ -5,9 +5,10 @@ TestRecommendation API Service Test Suite
 import os
 import logging
 from unittest import TestCase
+from urllib.parse import quote_plus
 from wsgi import app
 from service.common import status
-from service.models import db, Recommendation
+from service.models import db, Recommendation, RecommendationType
 from .factories import RecommendationFactory
 
 DATABASE_URI = os.getenv(
@@ -184,11 +185,24 @@ class TestRecommendationService(TestCase):
 
     def test_data_validation_error(self):
         """Test if submitting invalid data returns a data validation error"""
-        invalid_data = {"product_a_sku": "123", "type": "InvalidType"}
+        # test missing field
+        invalid_data = {"product_a_sku": "123", "recommendation_type": "UP_SELL"}
         response = self.client.post("/recommendations", json=invalid_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("error", response.get_json())
         self.assertEqual(response.get_json()["error"], "Bad Request")
+
+        # test invalid recommendation_type
+        invalid_data = {
+            "product_a_sku": "123",
+            "product_b_sku": "123",
+            "recommendation_type": "InvalidType",
+        }
+        response = self.client.post("/recommendations", json=invalid_data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.get_json())
+        self.assertEqual(response.get_json()["error"], "Bad Request")
+        self.assertIn("Invalid attribute: InvalidType", response.get_json()["message"])
 
     def test_not_found(self):
         """Test if requesting a non-existent Recommendation returns a 404 Not Found"""
@@ -222,7 +236,70 @@ class TestRecommendationService(TestCase):
 
         # Attempt to create a duplicate recommendation, which should fail
         response = self.client.post(BASE_URL, json=recommendation_data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
         self.assertIn(
             "Duplicate recommendation detected.", response.get_json()["message"]
         )
+
+    def test_query_by_product_a_sku(self):
+        """It should Query Recommendations by product_a_sku"""
+        recommendations = self._create_recommendations(5)
+        test_a_sku = recommendations[0].product_a_sku
+        product_a_sku_count = len(
+            [
+                recommendation
+                for recommendation in recommendations
+                if recommendation.product_a_sku == test_a_sku
+            ]
+        )
+        response = self.client.get(
+            BASE_URL, query_string=f"product_a_sku={quote_plus(test_a_sku)}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), product_a_sku_count)
+        # check the data just to be sure
+        for recommendation in data:
+            self.assertEqual(recommendation["product_a_sku"], test_a_sku)
+
+    def test_query_recommendation_list_by_recommendation_type(self):
+        """It should Query Recommendations by recommendation_type"""
+        recommendations = self._create_recommendations(10)
+        test_type = RecommendationType.BUNDLE
+        type_recommendations = [
+            recommendation
+            for recommendation in recommendations
+            if recommendation.recommendation_type == test_type
+        ]
+        response = self.client.get(BASE_URL, query_string="recommendation_type=bundle")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), len(type_recommendations))
+        # check the data just to be sure
+        for recommendation in data:
+            self.assertEqual(recommendation["recommendation_type"], test_type.name)
+
+    def test_query_by_product_a_sku_and_recommendation_type(self):
+        """It should Query Recommendations by product_a_sku and recommendation_type"""
+        recommendations = self._create_recommendations(10)
+        test_a_sku = recommendations[0].product_a_sku
+        test_type = RecommendationType.BUNDLE
+        product_a_sku_count = len(
+            [
+                recommendation
+                for recommendation in recommendations
+                if recommendation.product_a_sku == test_a_sku
+                and recommendation.recommendation_type == test_type
+            ]
+        )
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"product_a_sku={quote_plus(test_a_sku)}&recommendation_type=bundle",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), product_a_sku_count)
+        # check the data just to be sure
+        for recommendation in data:
+            self.assertEqual(recommendation["product_a_sku"], test_a_sku)
+            self.assertEqual(recommendation["recommendation_type"], test_type.name)

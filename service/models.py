@@ -50,6 +50,7 @@ class Recommendation(db.Model):
     product_a_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
     product_b_sku = db.Column(db.String(SKU_CHAR_LIMIT), nullable=False)
     recommendation_type = db.Column(db.Enum(RecommendationType), nullable=False)
+    likes = db.Column(db.Integer, nullable=False, default=0)
 
     name = f"{product_a_sku}-{product_b_sku}"
 
@@ -65,6 +66,10 @@ class Recommendation(db.Model):
         logger.info("Creating %s", self.name)
         self.id = None  # pylint: disable=invalid-name
         try:
+            if self.likes is not None and self.likes < 0:
+                # don't allow negative likes
+                raise DataValidationError("Likes cannot be negative: " + self.likes)
+
             db.session.add(self)
             db.session.commit()
         except Exception as e:
@@ -81,6 +86,10 @@ class Recommendation(db.Model):
             if self.id is None:
                 # don't allow primary key to be set to None
                 raise PrimaryKeyNotSetError()
+
+            if self.likes is not None and self.likes < 0:
+                # don't allow negative likes
+                raise DataValidationError("Likes cannot be negative: " + self.likes)
 
             db.session.commit()
         except Exception as e:
@@ -99,6 +108,20 @@ class Recommendation(db.Model):
             logger.error("Error deleting record: %s", self)
             raise DataValidationError(e) from e
 
+    def exists(self) -> bool:
+        """Returns True if Recommendation with given data exists in the database, false otherwise"""
+        logger.info("Checking if exists, %s", self.serialize())
+        return (
+            db.session.query(Recommendation)
+            .filter_by(
+                product_a_sku=self.product_a_sku,
+                product_b_sku=self.product_b_sku,
+                recommendation_type=self.recommendation_type,
+            )
+            .first()
+            is not None
+        )
+
     def serialize(self):
         """Serializes a Recommendation into a dictionary"""
         return {
@@ -106,9 +129,10 @@ class Recommendation(db.Model):
             "product_a_sku": self.product_a_sku,
             "product_b_sku": self.product_b_sku,
             "recommendation_type": self.recommendation_type.name,
+            "likes": self.likes,
         }
 
-    def deserialize(self, data):
+    def deserialize(self, data):  # noqa: C901
         """
         Deserializes a Recommendation from a dictionary
 
@@ -126,6 +150,19 @@ class Recommendation(db.Model):
             self.recommendation_type = getattr(
                 RecommendationType, data["recommendation_type"]
             )  # create enum from string
+
+            if "likes" not in data or data["likes"] is None:
+                self.likes = 0
+                return self
+
+            likes = data["likes"]
+            if not isinstance(likes, int):
+                raise DataValidationError(
+                    "Invalid type for integer [likes]: " + str(type(likes))
+                )
+            if likes < 0:
+                raise DataValidationError("Likes cannot be negative: " + likes)
+            self.likes = likes
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
@@ -144,6 +181,20 @@ class Recommendation(db.Model):
             ) from error
 
         return self
+
+    def add_like(self):
+        """Increments like counter by one"""
+        logger.info("Adding like for %s", self.name)
+        self.likes += 1
+        self.update()
+
+    def remove_like(self):
+        """Decrements like counter by one"""
+        logger.info("Decrementing like for %s", self.name)
+        if self.likes <= 0:
+            raise DataValidationError("Likes cannot be negative")
+        self.likes -= 1
+        self.update()
 
     ##################################################
     # CLASS METHODS
@@ -194,3 +245,20 @@ class Recommendation(db.Model):
         """
         logger.info("Processing type query for %s ...", recommendation_type.name)
         return cls.query.filter(cls.recommendation_type == recommendation_type)
+
+    @classmethod
+    def find_by_product_a_sku_and_type(cls, product_a_sku, recommendation_type):
+        """Find recommendations by product A SKU and type, ordered by likes."""
+        logger.info(
+            "Processing type query for %s and %s...",
+            product_a_sku,
+            recommendation_type.name,
+        )
+
+        return (
+            cls.query.filter_by(
+                product_a_sku=product_a_sku, recommendation_type=recommendation_type
+            )
+            .order_by(cls.likes.desc())
+            .all()
+        )

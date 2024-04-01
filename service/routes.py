@@ -62,7 +62,22 @@ def list_recommendations():
     app.logger.info("Request for recommendation list")
 
     recommendations = []
-    recommendations = Recommendation.all()
+    # See if any query filters were passed in
+    a_sku = request.args.get("product_a_sku")
+    recommendation_type = request.args.get("recommendation_type")
+
+    if a_sku and recommendation_type:
+        type_value = getattr(RecommendationType, recommendation_type.upper())
+        recommendations = Recommendation.find_by_product_a_sku_and_type(
+            a_sku, type_value
+        )
+    elif a_sku:
+        recommendations = Recommendation.find_by_product_a_sku(a_sku)
+    elif recommendation_type:
+        type_value = getattr(RecommendationType, recommendation_type.upper())
+        recommendations = Recommendation.find_by_type(type_value)
+    else:
+        recommendations = Recommendation.all()
 
     results = [recommendation.serialize() for recommendation in recommendations]
     app.logger.info("Returning %d recommendations", len(results))
@@ -81,23 +96,12 @@ def create_recommendations():
     app.logger.info("Request to create a recommendation")
     check_content_type("application/json")
 
-    data = request.get_json()
-    try:
-        recommendation_type = RecommendationType[data.get("recommendation_type")]
-    except KeyError:
-        error(status.HTTP_400_BAD_REQUEST, "Invalid recommendation type.")
-
-    existing_recommendation = Recommendation.query.filter_by(
-        product_a_sku=data.get("product_a_sku"),
-        product_b_sku=data.get("product_b_sku"),
-        recommendation_type=recommendation_type,
-    ).first()
-
-    if existing_recommendation:
-        error(status.HTTP_400_BAD_REQUEST, "Duplicate recommendation detected.")
-
     recommendation = Recommendation()
     recommendation.deserialize(request.get_json())
+
+    if recommendation.exists():
+        error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
+
     recommendation.create()
     message = recommendation.serialize()
     location_url = url_for(
