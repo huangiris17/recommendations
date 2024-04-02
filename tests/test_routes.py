@@ -328,6 +328,11 @@ class TestRecommendationService(TestCase):
         updated_recommendation = response.get_json()
         self.assertEqual(updated_recommendation["likes"], 0)
 
+    def health_check(self):
+        """It should gets {"status":"OK"} and 200_OK return code so that Kubernetes knows that your microservice is healthy."""
+        response = self.client.get(f"{BASE_URL}/health")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     ######################################################################
     #  T E S T  S A D  P A T H
     ######################################################################
