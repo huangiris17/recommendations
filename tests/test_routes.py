@@ -69,11 +69,13 @@ class TestRecommendationService(TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    def health_check(self):
-        """It should return {"status":"OK"} and 200_OK return code so that Kubernetes knows that your microservice is healthy."""
+    def test_health(self):
+        """It should be healthy"""
         response = self.client.get("/health")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("Healthy", response.get_json()["message"])
+        data = response.get_json()
+        self.assertEqual(data["status"], 200)
+        self.assertEqual(data["message"], "Healthy")
 
     def test_index(self):
         """It should return information about endpoints"""
