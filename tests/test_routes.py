@@ -69,6 +69,12 @@ class TestRecommendationService(TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
+    def health_check(self):
+        """It should return {"status":"OK"} and 200_OK return code so that Kubernetes knows that your microservice is healthy."""
+        response = self.client.get("/health")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("Healthy", response.get_json()["message"])
+
     def test_index(self):
         """It should return information about endpoints"""
         resp = self.client.get("/")
@@ -327,11 +333,6 @@ class TestRecommendationService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_recommendation = response.get_json()
         self.assertEqual(updated_recommendation["likes"], 0)
-
-    def health_check(self):
-        """It should gets {"status":"OK"} and 200_OK return code so that Kubernetes knows that your microservice is healthy."""
-        response = self.client.get(f"{BASE_URL}/health")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     ######################################################################
     #  T E S T  S A D  P A T H
