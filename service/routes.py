@@ -208,7 +208,7 @@ def update_recommendations(recommendation_id):
 @app.route("/recommendations/<int:recommendation_id>/like", methods=["PUT"])
 def increment_like(recommendation_id):
     """
-    Increment likes for a Recommendation
+    Increments likes for a Recommendation.
 
     This endpoint will increment the likes for the Recommendation with ID specified in URL
     """
@@ -238,7 +238,7 @@ def increment_like(recommendation_id):
 @app.route("/recommendations/<int:recommendation_id>/like", methods=["DELETE"])
 def decrement_like(recommendation_id):
     """
-    Decrement likes for a Recommendation
+    Decrements likes for a Recommendation.
 
     This endpoint will decrement the likes for the Recommendation with ID specified in URL
     """
