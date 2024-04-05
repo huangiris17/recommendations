@@ -46,6 +46,7 @@ tests/                     - test cases package
 | Column | Description |
 | ------ | ----------- |
 | id | Integer, serves as the primary key |
+| likes | Integer no less than 0, reflects the popularity of a recommendation |
 | product_a_sku |  String with no more than 10 characters, can not be null, represents product a |
 | product_b_sku |  String with no more than 10 characters, can not be null, represents product b |
 | recommendation_type | one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"}, denotes the relationship between product a and product b |
@@ -53,7 +54,7 @@ tests/                     - test cases package
 ### Example Object
 
 ```Python
-{'id': 1033, 'product_a_sku': 'uRfNZyNY', 'product_b_sku': 'svLLqnLF', 'recommendation_type': 'ACCESSORY'}
+{'id': 526, 'likes': 0, 'product_a_sku': 'HYJtLnYf', 'product_b_sku': 'cUnyEDwP', 'recommendation_type': 'CROSS_SELL'}
 ```
 
 ## Implemented Endpoints
@@ -79,6 +80,14 @@ Deletes a Recommendation based on the id specified in the path.
 ### PUT "/recommendations/\<int:recommendation_id\>"
 
 Updates a Recommendation based on the posted body.
+
+### PUT "/recommendations/\<int:recommendation_id\>/like"
+
+Increments likes for a Recommendation.
+
+### DELETE "/recommendations/\<int:recommendation_id\>/like"
+
+Decrement likes for a Recommendation.
 
 ## License
 
