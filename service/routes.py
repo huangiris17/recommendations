@@ -39,27 +39,33 @@ def health_check():
 ######################################################################
 # GET INDEX
 ######################################################################
+# @app.route("/")
+# def index():
+#     """Root URL response"""
+#     return (
+#         jsonify(
+#             name="Recommendations REST API Service",
+#             version="1.0",
+#             paths=[
+#                 (
+#                     {
+#                         "path": str(rule),
+#                         "methods": list(rule.methods),
+#                         "description": globals()[rule.endpoint].__doc__,
+#                     }
+#                 )
+#                 for rule in app.url_map.iter_rules()
+#                 if rule.endpoint != "static"
+#             ],
+#         ),
+#         status.HTTP_200_OK,
+#     )
+
+
 @app.route("/")
 def index():
-    """Root URL response"""
-    return (
-        jsonify(
-            name="Recommendations REST API Service",
-            version="1.0",
-            paths=[
-                (
-                    {
-                        "path": str(rule),
-                        "methods": list(rule.methods),
-                        "description": globals()[rule.endpoint].__doc__,
-                    }
-                )
-                for rule in app.url_map.iter_rules()
-                if rule.endpoint != "static"
-            ],
-        ),
-        status.HTTP_200_OK,
-    )
+    """Base URL for our service"""
+    return app.send_static_file("index.html")
 
 
 ######################################################################

@@ -78,22 +78,28 @@ class TestRecommendationService(TestCase):
         self.assertEqual(data["message"], "Healthy")
 
     def test_index(self):
-        """It should return information about endpoints"""
-        resp = self.client.get("/")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertIn("name", resp.json)
-        self.assertIn("version", resp.json)
-        self.assertIn("paths", resp.json)
-        self.assertEqual(
-            len(list(resp.json["paths"])),
-            len(
-                list(
-                    filter(
-                        lambda rule: rule.endpoint != "static", app.url_map.iter_rules()
-                    )
-                )
-            ),
-        )
+        """It should call the Home Page"""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(b"Pet Demo REST API Service", response.data)
+
+    # def test_index(self):
+    #     """It should return information about endpoints"""
+    #     resp = self.client.get("/")
+    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
+    #     self.assertIn("name", resp.json)
+    #     self.assertIn("version", resp.json)
+    #     self.assertIn("paths", resp.json)
+    #     self.assertEqual(
+    #         len(list(resp.json["paths"])),
+    #         len(
+    #             list(
+    #                 filter(
+    #                     lambda rule: rule.endpoint != "static", app.url_map.iter_rules()
+    #                 )
+    #             )
+    #         ),
+    #     )
 
     def test_get_recommendation(self):
         """It should Get a single Recommendation"""
