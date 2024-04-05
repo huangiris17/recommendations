@@ -81,7 +81,7 @@ class TestRecommendationService(TestCase):
         """It should call the Home Page"""
         response = self.client.get("/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(b"Pet Demo REST API Service", response.data)
+        self.assertIn(b"Recommendation REST API Service", response.data)
 
     # def test_index(self):
     #     """It should return information about endpoints"""
