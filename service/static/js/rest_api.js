@@ -7,18 +7,18 @@ $(function () {
     // Updates the form with data from the response
     function update_form_data(res) {
         $("#recommendation_id").val(res.id);
-        $("#product_a_sku").val(res.product_a_sku);
-        $("product_b_sku").val(res.product_b_sku);
-        $("#recommendation_type").val(res.recommendation_type);
+        $("#recommendation_product_a_sku").val(res.product_a_sku);
+        $("#recommendation_product_b_sku").val(res.product_b_sku);
+        $("#recommendation_recommendation_type").val(res.recommendation_type);
         $("#recommendation_likes").val(res.likes);
     }
 
     /// Clears all form fields
     function clear_form_data() {
         $("#recommendation_id").val("");
-        $("#product_a_sku").val("");
-        $("product_b_sku").val("");
-        $("#recommendation_type").val("");
+        $("#recommendation_product_a_sku").val("");
+        $("#recommendation_product_b_sku").val("");
+        $("#recommendation_recommendation_type").val("");
         $("#recommendation_likes").val("");
     }
 
