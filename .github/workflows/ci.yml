@@ -47,8 +47,6 @@ jobs:
           python -m pip install -U pip poetry
           poetry config virtualenvs.create false
           poetry install
-          python -m pip install behave selenium
-          export PATH="/home/vscode/.local/bin:$PATH"
 
       - name: Linting
         run: |
