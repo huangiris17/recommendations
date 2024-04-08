@@ -71,7 +71,7 @@ jobs:
           echo "Waiting for service to stabilize..."
           sleep 5
           echo "Checking service /health..."
-          curl -i http://localhost:8080/health
+          curl -i http://localhost:$PORT/health
           echo "\n*** SERVER IS RUNNING ***"
           behave
         env:
