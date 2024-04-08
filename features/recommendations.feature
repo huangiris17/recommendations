@@ -5,8 +5,8 @@ Feature: The recommendation service back-end
 
 Background:
     Given the following Recommendations
-        | id       | product_a_sku | product_b_sku | recommendation_type  | likes |
-        | 526      | HYJtLnYf      | cUnyEDwP      | CROSS_SELL    | 0 |
+        | product_a_sku | product_b_sku | recommendation_type  | likes |
+        | HYJtLnYf      | cUnyEDwP      | CROSS_SELL    | 0 |
 
 Scenario: The server is running
     When I visit the "Home Page"
