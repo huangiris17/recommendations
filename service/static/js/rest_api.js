@@ -183,7 +183,7 @@ $(function () {
     $("#search-btn").click(function () {
 
         let product_a_sku = $("#recommendation_product_a_sku").val();
-        let recommendation_type = $("#recommendation_recommendation_type").val().toLowerCase();
+        let recommendation_type = $("#recommendation_recommendation_type").val();
 
         let queryString = ""
 
@@ -198,7 +198,6 @@ $(function () {
                 queryString += 'recommendation_type=' + recommendation_type
             }
         }
-
         $("#flash_message").empty();
 
         let ajax = $.ajax({
