@@ -15,29 +15,29 @@ Scenario: The server is running
 
 Scenario: Create a Recommendation
     When I visit the "Home Page"
-    And I set the "recommendation_product_a_sku" to "Product_a"
-    And I set the "recommendation_product_b_sku" to "Product_b"
-    And I select "CROSS_SELL" in the "recommendation_recommendation_type" dropdown
+    And I set the "product_a_sku" to "Product_a"
+    And I set the "product_b_sku" to "Product_b"
+    And I select "CROSS_SELL" in the "recommendation_type" dropdown
     And I press the "Create" button
     Then I should see the message "Successfully created a recommendation"
     When I copy the "recommendation_id" field
     And I press the "Clear" button
     Then the "recommendation_id" field should be empty
-    And the "recommendation_product_a_sku" field should be empty
-    And the "recommendation_product_b_sku" field should be empty
-    And the "recommendation_recommendation_type" field should be empty
-    And the "recommendation_likes" field should be empty
+    And the "product_a_sku" field should be empty
+    And the "product_b_sku" field should be empty
+    And the "recommendation_type" field should be empty
+    And the "likes" field should be empty
     When I visit the "Home Page"
-    And I set the "recommendation_product_a_sku" to "Product_a"
-    And I set the "recommendation_product_b_sku" to "Product_b"
-    And I select "CROSS_SELL" in the "recommendation_recommendation_type" dropdown
+    And I set the "product_a_sku" to "Product_a"
+    And I set the "product_b_sku" to "Product_b"
+    And I select "CROSS_SELL" in the "recommendation_type" dropdown
     And I press the "Create" button
     Then I should see the message "409 Conflict: Duplicate recommendation detected."
     # --uncomment when Retrieve button set--
     # When I paste the "recommendation_id" field
     # And I press the "Retrieve" button
     # Then I should see the message "Success"
-    # And I should see "Product_a" in the "recommendation_product_a_sku" field
-    # And I should see "Product_b" in the "recommendation_product_b_sku" field
-    # And I should see "CROSS_SELL" in the "recommendation_recommendation_type" dropdown
-    # And I should see "0" in the "recommendation_likes" field
+    # And I should see "Product_a" in the "product_a_sku" field
+    # And I should see "Product_b" in the "product_b_sku" field
+    # And I should see "CROSS_SELL" in the "recommendation_type" dropdown
+    # And I should see "0" in the "likes" field
