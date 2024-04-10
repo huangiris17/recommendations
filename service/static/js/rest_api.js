@@ -190,6 +190,7 @@ $(function () {
         if (product_a_sku) {
             queryString += 'product_a_sku=' + product_a_sku
         }
+
         if (recommendation_type) {
             if (queryString.length > 0) {
                 queryString += '&recommendation_type=' + recommendation_type
