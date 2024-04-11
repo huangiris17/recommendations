@@ -60,3 +60,24 @@ Scenario: Search for nonexistent recommendation: AfqrQtgQ
     And I should not see "cEdasdTs" in the results
     And I should not see "FefaffeQ" in the results
     And I should not see "cUafQfef" in the results
+
+Scenario: Create a Recommendation
+    When I visit the "Home Page"
+    And I set the "product_a_sku" to "Product_a"
+    And I set the "product_b_sku" to "Product_b"
+    And I select "CROSS_SELL" in the "recommendation_type" dropdown
+    And I press the "Create" button
+    Then I should see the message "Successfully created a recommendation"
+    When I press the "Clear" button
+    Then the "id" field should be empty
+    And the "product_a_sku" field should be empty
+    And the "product_b_sku" field should be empty
+    And the "recommendation_type" field should be empty
+    And the "likes" field should be empty
+    When I visit the "Home Page"
+    And I set the "product_a_sku" to "Product_a"
+    And I set the "product_b_sku" to "Product_b"
+    And I select "CROSS_SELL" in the "recommendation_type" dropdown
+    And I press the "Create" button
+    Then I should see the message "409 Conflict: Duplicate recommendation detected."
+
