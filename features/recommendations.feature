@@ -25,7 +25,8 @@ Scenario: Search for HYJtLnYf
     And I should see "HYJtLnYf" in the results
     And I should not see "cEdasdTs" in the results
     And I should not see "FefaffeQ" in the results
-
+    And I should not see "cUafQfef" in the results
+    
 Scenario: Search for UP_SELL
     When I visit the "Home Page"
     And I press the "Clear" button
@@ -34,6 +35,7 @@ Scenario: Search for UP_SELL
     Then I should see the message "Success"
     And I should see "cEdasdTs" in the results
     And I should not see "cUnyEDwP" in the results
+    And I should not see "cUafQfef" in the results
     And I should not see "FefaffeQ" in the results
 
 Scenario: Search for dasdfeaQ and BUNDLE
@@ -46,3 +48,15 @@ Scenario: Search for dasdfeaQ and BUNDLE
     And I should see "FefaffeQ" in the results
     And I should not see "cUnyEDwP" in the results
     And I should not see "cEdasdTs" in the results
+    And I should not see "cUafQfef" in the results
+
+Scenario: Search for nonexistent recommendation: AfqrQtgQ
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Product A SKU" to "AfqrQtgQ"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should not see "HYJtLnYf" in the results
+    And I should not see "cEdasdTs" in the results
+    And I should not see "FefaffeQ" in the results
+    And I should not see "cUafQfef" in the results
