@@ -18,15 +18,17 @@ Scenario: The server is running
 
 Scenario: Search for HYJtLnYf
     When I visit the "Home Page"
+    And I press the "Clear" button
     And I set the "Product A SKU" to "HYJtLnYf"
     And I press the "Search" button
     Then I should see the message "Success"
-    # And I should see "HYJtLnYf" in the results
+    And I should see "HYJtLnYf" in the results
     And I should not see "cEdasdTs" in the results
     And I should not see "FefaffeQ" in the results
 
 Scenario: Search for UP_SELL
     When I visit the "Home Page"
+    And I press the "Clear" button
     And I select "UP_SELL" in the "Recommendation type" dropdown
     And I press the "Search" button
     Then I should see the message "Success"
@@ -36,6 +38,7 @@ Scenario: Search for UP_SELL
 
 Scenario: Search for dasdfeaQ and BUNDLE
     When I visit the "Home Page"
+    And I press the "Clear" button
     And I set the "Product A SKU" to "dasdfeaQ"
     And I select "BUNDLE" in the "Recommendation type" dropdown
     And I press the "Search" button
