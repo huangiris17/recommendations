@@ -20,7 +20,7 @@ Scenario: Create a Recommendation
     And I select "CROSS_SELL" in the "recommendation_type" dropdown
     And I press the "Create" button
     Then I should see the message "Successfully created a recommendation"
-    And I press the "Clear" button
+    When I press the "Clear" button
     Then the "id" field should be empty
     And the "product_a_sku" field should be empty
     And the "product_b_sku" field should be empty
