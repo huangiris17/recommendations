@@ -7,11 +7,59 @@ Background:
     Given the following Recommendations
         | product_a_sku | product_b_sku | recommendation_type  | likes |
         | HYJtLnYf      | cUnyEDwP      | CROSS_SELL    | 0 |
+        | GQGEsdfq      | cUafQfef      | CROSS_SELL    | 0 |
+        | FQEFQrQs      | cEdasdTs      | UP_SELL       | 1 |
+        | dasdfeaQ      | FefaffeQ      | BUNDLE        | 3 |
 
 Scenario: The server is running
     When I visit the "Home Page"
     Then I should see "Recommendation RESTful Service" in the title
     And I should not see "404 Not Found"
+
+Scenario: Search for HYJtLnYf
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Product A SKU" to "HYJtLnYf"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "HYJtLnYf" in the results
+    And I should not see "cEdasdTs" in the results
+    And I should not see "FefaffeQ" in the results
+    And I should not see "cUafQfef" in the results
+    
+Scenario: Search for UP_SELL
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I select "UP_SELL" in the "Recommendation type" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "cEdasdTs" in the results
+    And I should not see "cUnyEDwP" in the results
+    And I should not see "cUafQfef" in the results
+    And I should not see "FefaffeQ" in the results
+
+Scenario: Search for dasdfeaQ and BUNDLE
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Product A SKU" to "dasdfeaQ"
+    And I select "BUNDLE" in the "Recommendation type" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "FefaffeQ" in the results
+    And I should not see "cUnyEDwP" in the results
+    And I should not see "cEdasdTs" in the results
+    And I should not see "cUafQfef" in the results
+
+Scenario: Search for nonexistent recommendation: AfqrQtgQ
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Product A SKU" to "AfqrQtgQ"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should not see "HYJtLnYf" in the results
+    And I should not see "cEdasdTs" in the results
+    And I should not see "FefaffeQ" in the results
+    And I should not see "cUafQfef" in the results
 
 Scenario: Create a Recommendation
     When I visit the "Home Page"
@@ -32,3 +80,4 @@ Scenario: Create a Recommendation
     And I select "CROSS_SELL" in the "recommendation_type" dropdown
     And I press the "Create" button
     Then I should see the message "409 Conflict: Duplicate recommendation detected."
+
