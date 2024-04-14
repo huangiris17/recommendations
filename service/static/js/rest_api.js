@@ -53,12 +53,12 @@ $(function () {
             data: JSON.stringify(data),
         });
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             update_form_data(res)
             flash_message("Successfully created a recommendation")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             flash_message(res.responseJSON.message)
         });
     });
@@ -88,47 +88,47 @@ $(function () {
         $("#flash_message").empty();
 
         let ajax = $.ajax({
-                type: "PUT",
-                url: `/pets/${pet_id}`,
-                contentType: "application/json",
-                data: JSON.stringify(data)
-            })
+            type: "PUT",
+            url: `/pets/${pet_id}`,
+            contentType: "application/json",
+            data: JSON.stringify(data)
+        })
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             update_form_data(res)
             flash_message("Success")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             flash_message(res.responseJSON.message)
         });
 
     });
 
     // ****************************************
-    // Retrieve a Pet
+    // Retrieve a Recommendation
     // ****************************************
 
     $("#retrieve-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
+        let recommendation_id = $("#recommendation_id").val();
 
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/pets/${pet_id}`,
+            url: `/recommendations/${recommendation_id}`,
             contentType: "application/json",
             data: ''
         })
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             //alert(res.toSource())
             update_form_data(res)
             flash_message("Success")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             clear_form_data()
             flash_message(res.responseJSON.message)
         });
@@ -152,12 +152,12 @@ $(function () {
             data: '',
         })
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             clear_form_data()
             flash_message("Pet has been Deleted!")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             flash_message("Server error!")
         });
     });
@@ -203,7 +203,7 @@ $(function () {
             data: ''
         })
 
-        ajax.done(function(res){
+        ajax.done(function (res) {
             //alert(res.toSource())
             $("#search_results").empty();
             let table = '<table class="table table-striped" cellpadding="10">'
@@ -215,9 +215,9 @@ $(function () {
             table += '<th class="col-md-2">Likes</th>'
             table += '</tr></thead><tbody>'
             let firstRecommendation = "";
-            for(let i = 0; i < res.length; i++) {
+            for (let i = 0; i < res.length; i++) {
                 let recommendation = res[i];
-                table +=  `<tr id="row_${i}"><td>${recommendation.id}</td><td>${recommendation.product_a_sku}</td><td>${recommendation.product_b_sku}</td><td>${recommendation.recommendation_type}</td><td>${recommendation.likes}</td></tr>`;
+                table += `<tr id="row_${i}"><td>${recommendation.id}</td><td>${recommendation.product_a_sku}</td><td>${recommendation.product_b_sku}</td><td>${recommendation.recommendation_type}</td><td>${recommendation.likes}</td></tr>`;
                 if (i == 0) {
                     firstRecommendation = recommendation;
                 }
@@ -233,7 +233,7 @@ $(function () {
             flash_message("Success")
         });
 
-        ajax.fail(function(res){
+        ajax.fail(function (res) {
             flash_message(res.responseJSON.message)
         });
 
