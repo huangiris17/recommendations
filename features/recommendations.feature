@@ -102,3 +102,7 @@ Feature: The recommendation service back-end
         And I set the "Id" to "12345"
         And I press the "Delete" button
         Then I should see the message "Recommendation has been Deleted!"
+        When I press the "Clear" button
+        And I set the "Id" to "-1"
+        And I press the "Delete" button
+        Then I should see the message "Server error!"
