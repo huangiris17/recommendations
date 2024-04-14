@@ -16,6 +16,15 @@
         Then I should see "Recommendation RESTful Service" in the title
         And I should not see "404 Not Found"
 
+    Scenario: List all Recommendations
+        When I visit the "Home Page"
+        And I press the "List" button
+        Then I should see the message "Success"
+        And I should see "HYJtLnYf" in the results
+        And I should see "GQGEsdfq" in the results
+        And I should see "FQEFQrQs" in the results
+        And I should see "dasdfeaQ" in the results
+
     Scenario: Search for HYJtLnYf
         When I visit the "Home Page"
         And I press the "Clear" button
@@ -81,6 +90,32 @@
         And I press the "Create" button
         Then I should see the message "409 Conflict: Duplicate recommendation detected."
 
+    Scenario: Delete a Recommendation
+        When I visit the "Home Page"
+        And I press the "Clear" button
+        And I set the "Product A SKU" to "HYJtLnYf"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "HYJtLnYf" in the results
+        When I copy the "Id" field
+        And I press the "Clear" button
+        And I paste the "Id" field
+        And I press the "Delete" button
+        Then I should see the message "Recommendation has been Deleted!"
+        When I press the "Clear" button
+        And I set the "Product A SKU" to "HYJtLnYf"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should not see "HYJtLnYf" in the results
+        When I press the "Clear" button
+        And I set the "Id" to "12345"
+        And I press the "Delete" button
+        Then I should see the message "Recommendation has been Deleted!"
+        When I press the "Clear" button
+        And I set the "Id" to "-1"
+        And I press the "Delete" button
+        Then I should see the message "Server error!"
+
     Scenario: Retrieve recommendation
         When I visit the "Home Page"
         And I set the "product_a_sku" to "aSKU"
@@ -103,15 +138,14 @@
         And I press the "Retrieve" button
         Then I should see the message "404 Not Found: Recommendation with id '123456' was not found."
 
-
     Scenario: Update a Pet
         When I visit the "Home Page"
         And I press the "Clear" button
-        And I set the "Product A SKU" to "HYJtLnYf"
+        And I set the "Product A SKU" to "GQGEsdfq"
         And I press the "Search" button
         Then I should see the message "Success"
-        And I should see "HYJtLnYf" in the "Product A SKU" field
-        And I should see "cUnyEDwP" in the "Product B SKU" field
+        And I should see "GQGEsdfq" in the "Product A SKU" field
+        And I should see "cUafQfef" in the "Product B SKU" field
         And I should see "CROSS_SELL" in the "Recommendation type" field
         When I change "Product A SKU" to "FWiNenfo"
         And I press the "Update" button
@@ -126,8 +160,9 @@
         And I press the "Search" button
         Then I should see the message "Success"
         And I should see "FWiNenfo" in the results
-        And I should not see "HYJtLnYf" in the results
+        And I should not see "GQGEsdfq" in the results
         When I set the "Id" to "123456"
         And I set the "Product B SKU" to "SqefQGEs"
         And I press the "Update" button
         Then I should see the message "404 Not Found: Recommendation with id: '123456' was not found."
+
