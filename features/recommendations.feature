@@ -138,7 +138,7 @@
         And I press the "Retrieve" button
         Then I should see the message "404 Not Found: Recommendation with id '123456' was not found."
 
-    Scenario: Update a Pet
+    Scenario: Update a Reccommendation
         When I visit the "Home Page"
         And I press the "Clear" button
         And I set the "Product A SKU" to "GQGEsdfq"
