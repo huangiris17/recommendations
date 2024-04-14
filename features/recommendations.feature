@@ -104,8 +104,9 @@ Feature: The recommendation service back-end
         Then I should see the message "404 Not Found: Recommendation with id '123456' was not found."
 
 Scenario: List all Recommendations
-    Given I am on the "Home Page"
-    When I press the "Search" button without any search criteria
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I press the "Search" button
     Then I should see the message "Success"
     And I should see "HYJtLnYf" in the results
     And I should see "GQGEsdfq" in the results
