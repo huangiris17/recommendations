@@ -81,3 +81,11 @@ Scenario: Create a Recommendation
     And I press the "Create" button
     Then I should see the message "409 Conflict: Duplicate recommendation detected."
 
+Scenario: List all Recommendations
+    Given I am on the "Home Page"
+    When I press the "Search" button without any search criteria
+    Then I should see the message "Success"
+    And I should see "HYJtLnYf" in the results
+    And I should see "GQGEsdfq" in the results
+    And I should see "FQEFQrQs" in the results
+    And I should see "dasdfeaQ" in the results
