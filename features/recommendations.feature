@@ -1,7 +1,7 @@
-Feature: The recommendation service back-end
-    As a Recommendation Manager
-    I need a RESTful catalog service
-    So that I can keep track of all recommendations
+    Feature: The recommendation service back-end
+        As a Recommendation Manager
+        I need a RESTful catalog service
+        So that I can keep track of all recommendations
 
     Background:
         Given the following Recommendations
@@ -102,3 +102,28 @@ Feature: The recommendation service back-end
         And I set the "Id" to "123456"
         And I press the "Retrieve" button
         Then I should see the message "404 Not Found: Recommendation with id '123456' was not found."
+
+
+    Scenario: Update a Pet
+        When I visit the "Home Page"
+        And I press the "Clear" button
+        And I set the "Product A SKU" to "HYJtLnYf"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "HYJtLnYf" in the "Product A SKU" field
+        And I should see "cUnyEDwP" in the "Product B SKU" field
+        And I should see "CROSS_SELL" in the "Recommendation type" field
+        When I change "Product A SKU" to "FWiNenfo"
+        And I press the "Update" button
+        Then I should see the message "Success"
+        When I copy the "Id" field
+        And I press the "Clear" button
+        And I paste the "Id" field
+        And I press the "Retrieve" button
+        Then I should see the message "Success"
+        And I should see "FWiNenfo" in the "Product A SKU" field
+        When I press the "Clear" button
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "FWiNenfo" in the results
+        And I should not see "HYJtLnYf" in the results
