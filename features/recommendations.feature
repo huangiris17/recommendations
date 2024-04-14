@@ -128,3 +128,12 @@ Feature: The recommendation service back-end
         And I set the "Id" to "123456"
         And I press the "Retrieve" button
         Then I should see the message "404 Not Found: Recommendation with id '123456' was not found."
+
+    Scenario: List all Recommendations
+        When I visit the "Home Page"
+        And I press the "List" button
+        Then I should see the message "Success"
+        And I should see "HYJtLnYf" in the results
+        And I should see "GQGEsdfq" in the results
+        And I should see "FQEFQrQs" in the results
+        And I should see "dasdfeaQ" in the results
