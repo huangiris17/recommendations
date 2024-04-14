@@ -120,6 +120,15 @@ def step_impl(context, button):
     context.driver.find_element(By.ID, button_id).click()
 
 
+@when('I press the "Search" button without any search criteria')
+def step_impl(context):
+    search_button = context.driver.find_element(By.ID, "search-btn")
+    search_button.click()
+    product_a_sku = context.driver.find_element(By.ID, "recommendation_product_a_sku").get_attribute("value")
+    recommendation_type = context.driver.find_element(By.ID, "recommendation_recommendation_type").get_attribute("value")
+    assert product_a_sku == "" and recommendation_type == "", "Search criteria is not empty"
+
+
 @then('I should see "{name}" in the results')
 def step_impl(context, name):
     found = WebDriverWait(context.driver, context.wait_seconds).until(
