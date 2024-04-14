@@ -136,25 +136,25 @@ $(function () {
     });
 
     // ****************************************
-    // Delete a Pet
+    // Delete a Recommendation
     // ****************************************
 
     $("#delete-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
+        let recommendation_id = $("#recommendation_id").val();
 
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "DELETE",
-            url: `/pets/${pet_id}`,
+            url: `/recommendations/${recommendation_id}`,
             contentType: "application/json",
             data: '',
         })
 
         ajax.done(function (res) {
             clear_form_data()
-            flash_message("Pet has been Deleted!")
+            flash_message("Recommendation has been Deleted!")
         });
 
         ajax.fail(function (res) {
@@ -167,7 +167,7 @@ $(function () {
     // ****************************************
 
     $("#clear-btn").click(function () {
-        $("#pet_id").val("");
+        $("#recommendation_id").val("");
         $("#flash_message").empty();
         clear_form_data()
     });

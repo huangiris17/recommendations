@@ -81,6 +81,32 @@ Feature: The recommendation service back-end
         And I press the "Create" button
         Then I should see the message "409 Conflict: Duplicate recommendation detected."
 
+    Scenario: Delete a Recommendation
+        When I visit the "Home Page"
+        And I press the "Clear" button
+        And I set the "Product A SKU" to "HYJtLnYf"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "HYJtLnYf" in the results
+        When I copy the "Id" field
+        And I press the "Clear" button
+        And I paste the "Id" field
+        And I press the "Delete" button
+        Then I should see the message "Recommendation has been Deleted!"
+        When I press the "Clear" button
+        And I set the "Product A SKU" to "HYJtLnYf"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should not see "HYJtLnYf" in the results
+        When I press the "Clear" button
+        And I set the "Id" to "12345"
+        And I press the "Delete" button
+        Then I should see the message "Recommendation has been Deleted!"
+        When I press the "Clear" button
+        And I set the "Id" to "-1"
+        And I press the "Delete" button
+        Then I should see the message "Server error!"
+
     Scenario: Retrieve recommendation
         When I visit the "Home Page"
         And I set the "product_a_sku" to "aSKU"
