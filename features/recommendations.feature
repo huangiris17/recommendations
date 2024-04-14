@@ -98,3 +98,7 @@ Feature: The recommendation service back-end
         And I should see "bSKU" in the "Product b sku" field
         And I should see "CROSS_SELL" in the "Recommendation type" field
         And I should see "0" in the "Likes" field
+        When I press the "Clear" button
+        And I set the "Id" to "123456"
+        And I press the "Retrieve" button
+        Then I should see the message "404 Not Found: Recommendation with id '123456' was not found."
