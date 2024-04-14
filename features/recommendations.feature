@@ -106,3 +106,25 @@ Feature: The recommendation service back-end
         And I set the "Id" to "-1"
         And I press the "Delete" button
         Then I should see the message "Server error!"
+
+    Scenario: Retrieve recommendation
+        When I visit the "Home Page"
+        And I set the "product_a_sku" to "aSKU"
+        And I set the "product_b_sku" to "bSKU"
+        And I select "CROSS_SELL" in the "recommendation_type" dropdown
+        And I press the "Create" button
+        Then I should see the message "Successfully created a recommendation"
+        When I copy the "Id" field
+        And I press the "Clear" button
+        Then the "id" field should be empty
+        When I paste the "Id" field
+        And I press the "Retrieve" button
+        Then I should see the message "Success"
+        And I should see "aSKU" in the "Product a sku" field
+        And I should see "bSKU" in the "Product b sku" field
+        And I should see "CROSS_SELL" in the "Recommendation type" field
+        And I should see "0" in the "Likes" field
+        When I press the "Clear" button
+        And I set the "Id" to "123456"
+        And I press the "Retrieve" button
+        Then I should see the message "404 Not Found: Recommendation with id '123456' was not found."
