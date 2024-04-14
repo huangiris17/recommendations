@@ -127,3 +127,7 @@
         Then I should see the message "Success"
         And I should see "FWiNenfo" in the results
         And I should not see "HYJtLnYf" in the results
+        When I set the "Id" to "123456"
+        And I set the "Product B SKU" to "SqefQGEs"
+        And I press the "Update" button
+        Then I should see the message "404 Not Found: Recommendation with id: '123456' was not found."
