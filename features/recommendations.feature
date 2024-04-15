@@ -1,7 +1,7 @@
-Feature: The recommendation service back-end
-    As a Recommendation Manager
-    I need a RESTful catalog service
-    So that I can keep track of all recommendations
+    Feature: The recommendation service back-end
+        As a Recommendation Manager
+        I need a RESTful catalog service
+        So that I can keep track of all recommendations
 
     Background:
         Given the following Recommendations
@@ -15,6 +15,15 @@ Feature: The recommendation service back-end
         When I visit the "Home Page"
         Then I should see "Recommendation RESTful Service" in the title
         And I should not see "404 Not Found"
+
+    Scenario: List all Recommendations
+        When I visit the "Home Page"
+        And I press the "List" button
+        Then I should see the message "Success"
+        And I should see "HYJtLnYf" in the results
+        And I should see "GQGEsdfq" in the results
+        And I should see "FQEFQrQs" in the results
+        And I should see "dasdfeaQ" in the results
 
     Scenario: Search for HYJtLnYf
         When I visit the "Home Page"
@@ -129,11 +138,31 @@ Feature: The recommendation service back-end
         And I press the "Retrieve" button
         Then I should see the message "404 Not Found: Recommendation with id '123456' was not found."
 
-    Scenario: List all Recommendations
+    Scenario: Update a Reccommendation
         When I visit the "Home Page"
-        And I press the "List" button
+        And I press the "Clear" button
+        And I set the "Product A SKU" to "GQGEsdfq"
+        And I press the "Search" button
         Then I should see the message "Success"
-        And I should see "HYJtLnYf" in the results
-        And I should see "GQGEsdfq" in the results
-        And I should see "FQEFQrQs" in the results
-        And I should see "dasdfeaQ" in the results
+        And I should see "GQGEsdfq" in the "Product A SKU" field
+        And I should see "cUafQfef" in the "Product B SKU" field
+        And I should see "CROSS_SELL" in the "Recommendation type" field
+        When I change "Product A SKU" to "FWiNenfo"
+        And I press the "Update" button
+        Then I should see the message "Success"
+        When I copy the "Id" field
+        And I press the "Clear" button
+        And I paste the "Id" field
+        And I press the "Retrieve" button
+        Then I should see the message "Success"
+        And I should see "FWiNenfo" in the "Product A SKU" field
+        When I press the "Clear" button
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "FWiNenfo" in the results
+        And I should not see "GQGEsdfq" in the results
+        When I set the "Id" to "123456"
+        And I set the "Product B SKU" to "SqefQGEs"
+        And I press the "Update" button
+        Then I should see the message "404 Not Found: Recommendation with id: '123456' was not found."
+
