@@ -166,3 +166,12 @@
         And I press the "Update" button
         Then I should see the message "404 Not Found: Recommendation with id: '123456' was not found."
 
+    Scenario: Like a recommendation increases like count
+        When I visit the "Home Page"
+        And I press the "Clear" button
+        And I set the "Product A SKU" to "HYJtLnYf"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        When I press the "Like" button
+        Then I should see "1" in the "Likes" field
+        And I should see the message "Successfully liked the recommendation!"
