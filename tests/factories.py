@@ -3,7 +3,7 @@ Test Factory to make fake objects for testing
 """
 
 import factory
-from factory.fuzzy import FuzzyChoice, FuzzyText
+from factory.fuzzy import FuzzyChoice, FuzzyText, FuzzyInteger
 from service.models import Recommendation, RecommendationType
 
 
@@ -19,3 +19,4 @@ class RecommendationFactory(factory.Factory):
     product_a_sku = FuzzyText(length=8)
     product_b_sku = FuzzyText(length=8)
     recommendation_type = FuzzyChoice(choices=RecommendationType)
+    likes = FuzzyInteger(low=0)

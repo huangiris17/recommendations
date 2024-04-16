@@ -1,4 +1,4 @@
-name: CI Build
+name: BDD Testing
 on:
   push:
     branches:
@@ -48,21 +48,15 @@ jobs:
           poetry config virtualenvs.create false
           poetry install
 
-      - name: Linting
+      - name: Run the bdd testing
         run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 service tests --count --select=E9,F63,F7,F82 --show-source --statistics
-          # check for complexity. The GitHub editor is 127 chars wide
-          flake8 service tests --count --max-complexity=10 --max-line-length=127 --statistics
-          # Run pylint on the service
-          pylint service tests --max-line-length=127
-
-      - name: Run tdd unit tests with green
-        run: |
-          export FLASK_APP=service:app
-          pytest --pspec --cov=service --cov-fail-under=95 --disable-warnings
+          echo "\n*** STARTING APPLICATION ***\n"
+          gunicorn --bind 0.0.0.0:$PORT --log-level=info wsgi:app &
+          echo "Waiting for service to stabilize..."
+          sleep 5
+          echo "Checking service /health..."
+          curl -i http://localhost:$PORT/health
+          echo "\n*** SERVER IS RUNNING ***"
+          behave
         env:
           DATABASE_URI: "postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/testdb"
-
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v3.1.4

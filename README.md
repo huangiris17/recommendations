@@ -3,9 +3,16 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
 [![Build Status](https://github.com/CSCI-GA-2820-SP24-003/recommendations/actions/workflows/ci.yml/badge.svg)](https://github.com/CSCI-GA-2820-SP24-003/recommendations/actions)
+[![BDD Testing](https://github.com/CSCI-GA-2820-SP24-003/recommendations/actions/workflows/bdd.yml/badge.svg)](https://github.com/CSCI-GA-2820-SP24-003/recommendations/actions)
 [![codecov](https://codecov.io/gh/CSCI-GA-2820-SP24-003/recommendations/graph/badge.svg?token=UIX15W64TK)](https://codecov.io/gh/CSCI-GA-2820-SP24-003/recommendations)
 
-Based on [NYU DevOps Project Template](github.com/nyu-devops/project-template)
+The project is based on [NYU DevOps Project Template](https://github.com/nyu-devops/project-template)
+
+The TDD testing (pytest) is based on [NYU DevOps Lab Flask TDD](https://github.com/nyu-devops/lab-flask-tdd)
+
+The k8s templates are based on [NYU DevOps Lab Kubernetes](https://github.com/nyu-devops/lab-kubernetes)
+
+The BDD testing (behave) is based on [NYU DevOps Lab Flask BDD](https://github.com/nyu-devops/lab-flask-bdd)
 
 ## Overview
 
@@ -46,6 +53,7 @@ tests/                     - test cases package
 | Column | Description |
 | ------ | ----------- |
 | id | Integer, serves as the primary key |
+| likes | Integer no less than 0, reflects the popularity of a recommendation |
 | product_a_sku |  String with no more than 10 characters, can not be null, represents product a |
 | product_b_sku |  String with no more than 10 characters, can not be null, represents product b |
 | recommendation_type | one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"}, denotes the relationship between product a and product b |
@@ -53,7 +61,7 @@ tests/                     - test cases package
 ### Example Object
 
 ```Python
-{'id': 1033, 'product_a_sku': 'uRfNZyNY', 'product_b_sku': 'svLLqnLF', 'recommendation_type': 'ACCESSORY'}
+{'id': 526, 'likes': 0, 'product_a_sku': 'HYJtLnYf', 'product_b_sku': 'cUnyEDwP', 'recommendation_type': 'CROSS_SELL'}
 ```
 
 ## Implemented Endpoints
@@ -79,6 +87,14 @@ Deletes a Recommendation based on the id specified in the path.
 ### PUT "/recommendations/\<int:recommendation_id\>"
 
 Updates a Recommendation based on the posted body.
+
+### PUT "/recommendations/\<int:recommendation_id\>/like"
+
+Increments likes for a Recommendation.
+
+### DELETE "/recommendations/\<int:recommendation_id\>/like"
+
+Decrement likes for a Recommendation.
 
 ## License
 

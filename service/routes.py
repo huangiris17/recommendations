@@ -28,29 +28,44 @@ from service.common import status  # HTTP Status Codes
 
 
 ######################################################################
+# GET HEALTH CHECK
+######################################################################
+@app.route("/health")
+def health_check():
+    """Let them know our heart is still beating"""
+    return jsonify(status=200, message="Healthy"), status.HTTP_200_OK
+
+
+######################################################################
 # GET INDEX
 ######################################################################
+# @app.route("/")
+# def index():
+#     """Root URL response"""
+#     return (
+#         jsonify(
+#             name="Recommendations REST API Service",
+#             version="1.0",
+#             paths=[
+#                 (
+#                     {
+#                         "path": str(rule),
+#                         "methods": list(rule.methods),
+#                         "description": globals()[rule.endpoint].__doc__,
+#                     }
+#                 )
+#                 for rule in app.url_map.iter_rules()
+#                 if rule.endpoint != "static"
+#             ],
+#         ),
+#         status.HTTP_200_OK,
+#     )
+
+
 @app.route("/")
 def index():
-    """Root URL response"""
-    return (
-        jsonify(
-            name="Recommendations REST API Service",
-            version="1.0",
-            paths=[
-                (
-                    {
-                        "path": str(rule),
-                        "methods": list(rule.methods),
-                        "description": globals()[rule.endpoint].__doc__,
-                    }
-                )
-                for rule in app.url_map.iter_rules()
-                if rule.endpoint != "static"
-            ],
-        ),
-        status.HTTP_200_OK,
-    )
+    """Base URL for our service"""
+    return app.send_static_file("index.html")
 
 
 ######################################################################
@@ -62,7 +77,22 @@ def list_recommendations():
     app.logger.info("Request for recommendation list")
 
     recommendations = []
-    recommendations = Recommendation.all()
+    # See if any query filters were passed in
+    a_sku = request.args.get("product_a_sku")
+    recommendation_type = request.args.get("recommendation_type")
+
+    if a_sku and recommendation_type:
+        type_value = getattr(RecommendationType, recommendation_type.upper())
+        recommendations = Recommendation.find_by_product_a_sku_and_type(
+            a_sku, type_value
+        )
+    elif a_sku:
+        recommendations = Recommendation.find_by_product_a_sku(a_sku)
+    elif recommendation_type:
+        type_value = getattr(RecommendationType, recommendation_type.upper())
+        recommendations = Recommendation.find_by_type(type_value)
+    else:
+        recommendations = Recommendation.all()
 
     results = [recommendation.serialize() for recommendation in recommendations]
     app.logger.info("Returning %d recommendations", len(results))
@@ -81,23 +111,12 @@ def create_recommendations():
     app.logger.info("Request to create a recommendation")
     check_content_type("application/json")
 
-    data = request.get_json()
-    try:
-        recommendation_type = RecommendationType[data.get("recommendation_type")]
-    except KeyError:
-        error(status.HTTP_400_BAD_REQUEST, "Invalid recommendation type.")
-
-    existing_recommendation = Recommendation.query.filter_by(
-        product_a_sku=data.get("product_a_sku"),
-        product_b_sku=data.get("product_b_sku"),
-        recommendation_type=recommendation_type,
-    ).first()
-
-    if existing_recommendation:
-        return error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
-
     recommendation = Recommendation()
     recommendation.deserialize(request.get_json())
+
+    if recommendation.exists():
+        error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
+
     recommendation.create()
     message = recommendation.serialize()
     location_url = url_for(
@@ -180,6 +199,66 @@ def update_recommendations(recommendation_id):
     recommendation.update()
 
     app.logger.info("Recommendation with ID: %d updated.", recommendation.id)
+    return jsonify(recommendation.serialize()), status.HTTP_200_OK
+
+
+######################################################################
+# INCREMENT LIKES FIELD FOR A RECOMMENDATION
+######################################################################
+@app.route("/recommendations/<int:recommendation_id>/like", methods=["PUT"])
+def increment_like(recommendation_id):
+    """
+    Increments likes for a Recommendation.
+
+    This endpoint will increment the likes for the Recommendation with ID specified in URL
+    """
+    app.logger.info(
+        "Request to increment recommendation's likes field with id: %d",
+        recommendation_id,
+    )
+
+    recommendation = Recommendation.find(recommendation_id)
+    if not recommendation:
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Recommendation with id: '{recommendation_id}' was not found.",
+        )
+
+    recommendation.add_like()
+
+    app.logger.info(
+        "Recommendation with ID: %d - likes field incremented.", recommendation.id
+    )
+    return jsonify(recommendation.serialize()), status.HTTP_200_OK
+
+
+######################################################################
+# DECREMENT LIKES FIELD FOR A RECOMMENDATION
+######################################################################
+@app.route("/recommendations/<int:recommendation_id>/like", methods=["DELETE"])
+def decrement_like(recommendation_id):
+    """
+    Decrements likes for a Recommendation.
+
+    This endpoint will decrement the likes for the Recommendation with ID specified in URL
+    """
+    app.logger.info(
+        "Request to decrement recommendation's likes field with id: %d",
+        recommendation_id,
+    )
+
+    recommendation = Recommendation.find(recommendation_id)
+    if not recommendation:
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Recommendation with id: '{recommendation_id}' was not found.",
+        )
+
+    recommendation.remove_like()
+
+    app.logger.info(
+        "Recommendation with ID: %d - likes field decremented.", recommendation.id
+    )
     return jsonify(recommendation.serialize()), status.HTTP_200_OK
 
 

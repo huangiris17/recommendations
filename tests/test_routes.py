@@ -5,9 +5,10 @@ TestRecommendation API Service Test Suite
 import os
 import logging
 from unittest import TestCase
+from urllib.parse import quote_plus
 from wsgi import app
 from service.common import status
-from service.models import db, Recommendation
+from service.models import db, Recommendation, RecommendationType
 from .factories import RecommendationFactory
 
 DATABASE_URI = os.getenv(
@@ -15,14 +16,15 @@ DATABASE_URI = os.getenv(
 )
 BASE_URL = "/recommendations"
 
-
 ######################################################################
 #  T E S T   R E C O M M E N D A T I O N   S E R V I C E
 ######################################################################
+
+
+# pylint: disable=too-many-public-methods, duplicate-code
 class TestRecommendationService(TestCase):
     """Recommendation Server Tests"""
 
-    # pylint: disable=duplicate-code
     @classmethod
     def setUpClass(cls):
         """Run once before all tests"""
@@ -66,25 +68,38 @@ class TestRecommendationService(TestCase):
     ######################################################################
     #  T E S T   C A S E S
     ######################################################################
-    # pylint: disable=too-many-public-methods
+
+    def test_health(self):
+        """It should be healthy"""
+        response = self.client.get("/health")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["status"], 200)
+        self.assertEqual(data["message"], "Healthy")
 
     def test_index(self):
-        """It should return information about endpoints"""
-        resp = self.client.get("/")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertIn("name", resp.json)
-        self.assertIn("version", resp.json)
-        self.assertIn("paths", resp.json)
-        self.assertEqual(
-            len(list(resp.json["paths"])),
-            len(
-                list(
-                    filter(
-                        lambda rule: rule.endpoint != "static", app.url_map.iter_rules()
-                    )
-                )
-            ),
-        )
+        """It should call the Home Page"""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(b"Recommendation REST API Service", response.data)
+
+    # def test_index(self):
+    #     """It should return information about endpoints"""
+    #     resp = self.client.get("/")
+    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
+    #     self.assertIn("name", resp.json)
+    #     self.assertIn("version", resp.json)
+    #     self.assertIn("paths", resp.json)
+    #     self.assertEqual(
+    #         len(list(resp.json["paths"])),
+    #         len(
+    #             list(
+    #                 filter(
+    #                     lambda rule: rule.endpoint != "static", app.url_map.iter_rules()
+    #                 )
+    #             )
+    #         ),
+    #     )
 
     def test_get_recommendation(self):
         """It should Get a single Recommendation"""
@@ -184,11 +199,24 @@ class TestRecommendationService(TestCase):
 
     def test_data_validation_error(self):
         """Test if submitting invalid data returns a data validation error"""
-        invalid_data = {"product_a_sku": "123", "type": "InvalidType"}
+        # test missing field
+        invalid_data = {"product_a_sku": "123", "recommendation_type": "UP_SELL"}
         response = self.client.post("/recommendations", json=invalid_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("error", response.get_json())
         self.assertEqual(response.get_json()["error"], "Bad Request")
+
+        # test invalid recommendation_type
+        invalid_data = {
+            "product_a_sku": "123",
+            "product_b_sku": "123",
+            "recommendation_type": "InvalidType",
+        }
+        response = self.client.post("/recommendations", json=invalid_data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.get_json())
+        self.assertEqual(response.get_json()["error"], "Bad Request")
+        self.assertIn("Invalid attribute: InvalidType", response.get_json()["message"])
 
     def test_not_found(self):
         """Test if requesting a non-existent Recommendation returns a 404 Not Found"""
@@ -223,3 +251,113 @@ class TestRecommendationService(TestCase):
         # Attempt to create a duplicate recommendation, which should fail
         response = self.client.post(BASE_URL, json=recommendation_data)
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+        self.assertIn(
+            "Duplicate recommendation detected.", response.get_json()["message"]
+        )
+
+    def test_query_by_product_a_sku(self):
+        """It should Query Recommendations by product_a_sku"""
+        recommendations = self._create_recommendations(5)
+        test_a_sku = recommendations[0].product_a_sku
+        product_a_sku_count = len(
+            [
+                recommendation
+                for recommendation in recommendations
+                if recommendation.product_a_sku == test_a_sku
+            ]
+        )
+        response = self.client.get(
+            BASE_URL, query_string=f"product_a_sku={quote_plus(test_a_sku)}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), product_a_sku_count)
+        # check the data just to be sure
+        for recommendation in data:
+            self.assertEqual(recommendation["product_a_sku"], test_a_sku)
+
+    def test_query_recommendation_list_by_recommendation_type(self):
+        """It should Query Recommendations by recommendation_type"""
+        recommendations = self._create_recommendations(10)
+        test_type = RecommendationType.BUNDLE
+        type_recommendations = [
+            recommendation
+            for recommendation in recommendations
+            if recommendation.recommendation_type == test_type
+        ]
+        response = self.client.get(BASE_URL, query_string="recommendation_type=bundle")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), len(type_recommendations))
+        # check the data just to be sure
+        for recommendation in data:
+            self.assertEqual(recommendation["recommendation_type"], test_type.name)
+
+    def test_query_by_product_a_sku_and_recommendation_type(self):
+        """It should Query Recommendations by product_a_sku and recommendation_type"""
+        recommendations = self._create_recommendations(10)
+        test_a_sku = recommendations[0].product_a_sku
+        test_type = RecommendationType.BUNDLE
+        product_a_sku_count = len(
+            [
+                recommendation
+                for recommendation in recommendations
+                if recommendation.product_a_sku == test_a_sku
+                and recommendation.recommendation_type == test_type
+            ]
+        )
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"product_a_sku={quote_plus(test_a_sku)}&recommendation_type=bundle",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), product_a_sku_count)
+        # check the data just to be sure
+        for recommendation in data:
+            self.assertEqual(recommendation["product_a_sku"], test_a_sku)
+            self.assertEqual(recommendation["recommendation_type"], test_type.name)
+
+    def test_increment_recommendation_likes(self):
+        """It should increment Recommendation's likes field by recommendation id"""
+        test_recommendation = self._create_recommendations(1)[0]
+
+        for _ in range(10):
+            response = self.client.put(f"{BASE_URL}/{test_recommendation.id}/like")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_recommendation = response.get_json()
+        self.assertEqual(updated_recommendation["likes"], 10)
+
+    def test_decrement_recommendation_likes_succeed(self):
+        """It should decrement Recommendation's likes field by recommendation id"""
+        test_recommendation = self._create_recommendations(1)[0]
+        response = self.client.put(f"{BASE_URL}/{test_recommendation.id}/like")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_recommendation = response.get_json()
+        self.assertEqual(updated_recommendation["likes"], 1)
+
+        response = self.client.delete(f"{BASE_URL}/{test_recommendation.id}/like")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_recommendation = response.get_json()
+        self.assertEqual(updated_recommendation["likes"], 0)
+
+    ######################################################################
+    #  T E S T  S A D  P A T H
+    ######################################################################
+
+    def test_increment_recommendation_likes_notfound(self):
+        """It should increment Recommendation's likes field by recommendation id that doesn't exist"""
+        response = self.client.put(f"{BASE_URL}/10000/like")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_decrement_recommendation_likes_fail(self):
+        """It should decrement Recommendation's likes field by recommendation id that had likes less or equal to 0"""
+        test_recommendation = self._create_recommendations(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{test_recommendation.id}/like")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_decrement_recommendation_likes_notfound(self):
+        """It should decrement Recommendation's likes field by recommendation id that doesn't exist"""
+        response = self.client.delete(f"{BASE_URL}/10000/like")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
