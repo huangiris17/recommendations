@@ -168,6 +168,7 @@
 
     Scenario: Like a recommendation increases like count
         When I visit the "Home Page"
+        And I press the "Clear" button
         And I set the "Product A SKU" to "HYJtLnYf"
         And I press the "Search" button
         Then I should see the message "Success"
