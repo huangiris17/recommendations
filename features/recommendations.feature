@@ -173,4 +173,4 @@
         Then I should see the message "Success"
         When I press the "Like" button
         Then I should see "1" in the "Likes" field
-        Then I should see the message "Successfully liked the recommendation!"
+        And I should see the message "Successfully liked the recommendation!"
