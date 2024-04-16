@@ -175,3 +175,18 @@
         When I press the "Like" button
         Then I should see "1" in the "Likes" field
         And I should see the message "Successfully liked the recommendation!"
+
+    Scenario: Dislike a recommendation decreases like count
+        When I visit the "Home Page"
+        And I press the "Clear" button
+        And I set the "Product A SKU" to "FQEFQrQs"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "FQEFQrQs" in the "Product A SKU" field
+        And I should see "cEdasdTs" in the "Product B SKU" field
+        And I should see "1" in the "Likes" field
+        When I press the "Dislike" button
+        Then I should see "0" in the "Likes" field
+        And I should see the message "Successfully disliked the recommendation!"
+        When I press the "Dislike" button
+        Then I should see the message "Likes cannot be negative"
