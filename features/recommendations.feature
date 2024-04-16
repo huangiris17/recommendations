@@ -137,3 +137,13 @@ Feature: The recommendation service back-end
         And I should see "GQGEsdfq" in the results
         And I should see "FQEFQrQs" in the results
         And I should see "dasdfeaQ" in the results
+
+    Scenario: Like a recommendation increases like count
+        When I visit the "Home Page"
+        And I set the "Product A SKU" to "HYJtLnYf"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        When I press the "Like" button
+        Then I should see "1" in the "Likes" field
+        Then I should see the message "Successfully liked the recommendation!"
+        
