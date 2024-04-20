@@ -64,9 +64,47 @@ tests/                     - test cases package
 {'id': 526, 'likes': 0, 'product_a_sku': 'HYJtLnYf', 'product_b_sku': 'cUnyEDwP', 'recommendation_type': 'CROSS_SELL'}
 ```
 
+## Administration Frontend
+
+![Administration Frontend](./recommendation-frontend.jpg)
+
+### Buttons
+
+#### Retrieve
+
+Retrieves the Recommendation with the given `id`.
+
+#### Delete
+
+Deletes the Recommendation with the given `id`.
+
+#### Like
+
+Increments the `likes` field of the Recommendation with the given `id` by 1.
+
+#### Dislike
+
+Decrements the `likes` field of the Recommendation with the given `id` by 1. Likes cannot be lower than 0.
+
+#### List
+
+Retrieves all Recommendations from the database.
+
+#### Search
+
+Retrieves all Recommendations whose `product_a_sku` and / or `recommendation_type` match the input.
+
+#### Clear
+
+Clears all inputs.
+
+#### Create
+
+Creates a Recommendation in the database with the given `product_a_sku`, `product_b_sku`, `recommendation_type` and `likes`. The `id` is automatically managed by the database.
+
 ## Implemented Endpoints
 
-The root URL returns a guide to use Recommendation APIs.
+The root URL returns the administration frontend described above.
 
 ### GET "/recommendations"
 
