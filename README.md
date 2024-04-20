@@ -100,7 +100,7 @@ Clears all inputs.
 
 #### Create
 
-Creates a Recommendation in the database with the given `product_a_sku`, `product_b_sku`, `recommendation_type` and `likes`. The `id` is automatically managed by the database.
+Creates a Recommendation in the database with the given `product_a_sku`, `product_b_sku`, `recommendation_type` and `likes`. The `id` and `likes` are automatically managed by the database.
 
 ## Implemented Endpoints
 

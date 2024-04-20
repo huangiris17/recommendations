@@ -38,6 +38,11 @@ $(function () {
         let product_b_sku = $("#recommendation_product_b_sku").val();
         let recommendation_type = $("#recommendation_recommendation_type").val();
 
+        if (!product_a_sku || !product_b_sku || !recommendation_type) {
+            flash_message("Please complete the attributes of the Recommendation: product_a_sku, product_b_sku, recommendation_type.");
+            return;
+        }
+
         let data = {
             "product_a_sku": product_a_sku,
             "product_b_sku": product_b_sku,
@@ -75,6 +80,11 @@ $(function () {
         let product_b_sku = $("#recommendation_product_b_sku").val();
         let recommendation_type = $("#recommendation_recommendation_type").val();
 
+        if (!recommendation_id || !product_a_sku || !product_b_sku || !recommendation_type) {
+            flash_message("Please complete the attributes of the Recommendation: id, product_a_sku, product_b_sku, recommendation_type.");
+            return;
+        }
+
         let data = {
             "product_a_sku": product_a_sku,
             "product_b_sku": product_b_sku,
@@ -109,6 +119,11 @@ $(function () {
 
         let recommendation_id = $("#recommendation_id").val();
 
+        if (!recommendation_id) {
+            flash_message("Please select a recommendation to retrieve.");
+            return;
+        }
+
         $("#flash_message").empty();
 
         let ajax = $.ajax({
@@ -138,6 +153,11 @@ $(function () {
     $("#delete-btn").click(function () {
 
         let recommendation_id = $("#recommendation_id").val();
+
+        if (!recommendation_id) {
+            flash_message("Please select a recommendation to delete.");
+            return;
+        }
 
         $("#flash_message").empty();
 
@@ -293,20 +313,20 @@ $(function () {
             flash_message("Please select a recommendation to like.");
             return;
         }
-    
+
         $("#flash_message").empty();
-    
+
         let ajax = $.ajax({
             type: "PUT",
             url: `/recommendations/${recommendation_id}/like`,
             contentType: "application/json"
         });
-    
+
         ajax.done(function (res) {
             update_form_data(res);
             flash_message("Successfully liked the recommendation!");
         });
-    
+
         ajax.fail(function (res) {
             flash_message(res.responseJSON.message);
         });
@@ -322,20 +342,20 @@ $(function () {
             flash_message("Please select a recommendation to dislike.");
             return;
         }
-    
+
         $("#flash_message").empty();
-    
+
         let ajax = $.ajax({
             type: "DELETE",
             url: `/recommendations/${recommendation_id}/like`,
             contentType: "application/json"
         });
-    
+
         ajax.done(function (res) {
             update_form_data(res);
             flash_message("Successfully disliked the recommendation!");
         });
-    
+
         ajax.fail(function (res) {
             flash_message(res.responseJSON.message);
         });
