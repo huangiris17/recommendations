@@ -30,25 +30,27 @@ HTTP_200_OK = 200
 HTTP_201_CREATED = 201
 HTTP_204_NO_CONTENT = 204
 
-@given('the following recommendations')
+
+@given("the following recommendations")
 def step_impl(context):
-    """ Delete all Recommendations and load new ones """
+    """Delete all Recommendations and load new ones"""
 
     # List all of the Recommendations and delete them one by one
     rest_endpoint = f"{context.base_url}/recommendations"
     context.resp = requests.get(rest_endpoint)
     assert context.resp.status_code == HTTP_200_OK
     for recommendation in context.resp.json():
-        context.resp = requests.delete(f"{rest_endpoint}/{recommendation['id']}")
+        recommendation_id = recommendation["id"]
+        context.resp = requests.delete(f"{rest_endpoint}/{recommendation_id}")
         assert context.resp.status_code == HTTP_204_NO_CONTENT
 
     # load the database with new Recommendations
     for row in context.table:
         payload = {
-            "product_a_sku": row['product_a_sku'],
-            "product_b_sku": row['product_b_sku'],
-            "recommendation_type": row['recommendation_type'],
-            "likes": int(row['likes'])
+            "product_a_sku": row["product_a_sku"],
+            "product_b_sku": row["product_b_sku"],
+            "recommendation_type": row["recommendation_type"],
+            "likes": int(row["likes"]),
         }
         context.resp = requests.post(rest_endpoint, json=payload)
         assert context.resp.status_code == HTTP_201_CREATED

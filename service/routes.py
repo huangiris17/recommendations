@@ -22,9 +22,9 @@ This service implements a REST API that allows you to Create, Read, Update
 and Delete Recommendations from the inventory of recommendations in the RecommendationShop
 """
 
-from flask import jsonify, request, url_for, abort
+from flask import jsonify, request, abort
 from flask import current_app as app  # Import Flask
-from flask_restx import Resource, fields, reqparse, inputs
+from flask_restx import Resource, fields, reqparse
 from service.models import Recommendation, RecommendationType
 from service.common import status  # HTTP Status Codes
 from . import api
@@ -128,9 +128,9 @@ recommendation_args.add_argument(
 
 
 ######################################################################
-#  PATH: /pets/{id}
+#  PATH: /recommendations/{id}
 ######################################################################
-@api.route("/recommendations/<int:recommendation_id>")
+@api.route("/recommendations/<recommendation_id>")
 @api.param("recommendation_id", "The Recommendation identifier")
 class RecommendationResource(Resource):
     """
@@ -164,8 +164,8 @@ class RecommendationResource(Resource):
                 f"Recommendation with id '{recommendation_id}' was not found.",
             )
 
-        app.logger.info("Returning recommendation: %s", recommendation.name)
-        return jsonify(recommendation.serialize()), status.HTTP_200_OK
+        app.logger.info("Returning recommendation: %s", recommendation_id)
+        return recommendation.serialize(), status.HTTP_200_OK
 
     # ------------------------------------------------------------------
     # UPDATE AN EXISTING RECOMMENDATION
@@ -173,7 +173,7 @@ class RecommendationResource(Resource):
     @api.doc("update_recommendations")
     @api.response(404, "Recommendation with id not found")
     @api.response(400, "The posted Recommendation data was not valid")
-    @api.expect(recommendation_model)
+    @api.expect(create_model)
     @api.marshal_with(recommendation_model)
     def put(self, recommendation_id):
         """
@@ -182,7 +182,7 @@ class RecommendationResource(Resource):
         This endpoint will update a Recommendation based on the body that is posted
         """
         app.logger.info(
-            "Request to update recommendation with id: %d", recommendation_id
+            "Request to update recommendation with id: %s", recommendation_id
         )
         check_content_type("application/json")
 
@@ -197,29 +197,29 @@ class RecommendationResource(Resource):
         recommendation.id = recommendation_id
         recommendation.update()
 
-        app.logger.info("Recommendation with ID: %d updated.", recommendation.id)
-        return jsonify(recommendation.serialize()), status.HTTP_200_OK
+        app.logger.info("Recommendation with ID: %s updated.", recommendation.id)
+        return recommendation.serialize(), status.HTTP_200_OK
 
     ######################################################################
     # DELETE A RECOMMENDATION
     ######################################################################
     @api.doc("delete_recommendations")
     @api.response(204, "Recommendation deleted")
-    def delete_recommendations(recommendation_id):
+    def delete(self, recommendation_id):
         """
         Deletes a Recommendation
 
         This endpoint will delete a Recommendation based the id specified in the path
         """
         app.logger.info(
-            "Request to delete recommendation with id: %d", recommendation_id
+            "Request to delete recommendation with id: %s", recommendation_id
         )
 
         recommendation = Recommendation.find(recommendation_id)
         if recommendation:
             recommendation.delete()
             app.logger.info(
-                "Recommendation with ID: %d was deleted.", recommendation_id
+                "Recommendation with ID: %s was deleted.", recommendation_id
             )
 
         return "", status.HTTP_204_NO_CONTENT
@@ -228,7 +228,7 @@ class RecommendationResource(Resource):
 ######################################################################
 #  PATH: /recommendations
 ######################################################################
-@api.route("recommendations", strict_slashes=False)
+@api.route("/recommendations", strict_slashes=False)
 class RecommendationCollection(Resource):
     """Handles all interactions with collections of Recommendations"""
 
@@ -263,7 +263,7 @@ class RecommendationCollection(Resource):
 
         results = [recommendation.serialize() for recommendation in recommendations]
         app.logger.info("Returning %d recommendations", len(results))
-        return jsonify(results), status.HTTP_200_OK
+        return results, status.HTTP_200_OK
 
     ######################################################################
     # CREATE A NEW RECOMMENDATION
@@ -290,13 +290,13 @@ class RecommendationCollection(Resource):
 
         recommendation.create()
         message = recommendation.serialize()
-        location_url = url_for(
-            "get_recommendations", recommendation_id=recommendation.id, _external=True
+        location_url = api.url_for(
+            RecommendationResource, recommendation_id=recommendation.id, _external=True
         )
 
         app.logger.info("Recommendation %d created.", recommendation.id)
         return (
-            jsonify(message),
+            message,
             status.HTTP_201_CREATED,
             {"Location": location_url},
         )
@@ -305,7 +305,7 @@ class RecommendationCollection(Resource):
 ######################################################################
 #  PATH: /recommendations/{id}/like
 ######################################################################
-@api.route("recommendations/<recommendation_id>/like")
+@api.route("/recommendations/<recommendation_id>/like")
 @api.param("recommendation_id", "The Recommendation Identifier")
 class LikeResource(Resource):
     """Like actions on a pet"""
@@ -322,7 +322,7 @@ class LikeResource(Resource):
         This endpoint will increment the likes for the Recommendation with ID specified in URL
         """
         app.logger.info(
-            "Request to increment recommendation's likes field with id: %d",
+            "Request to increment recommendation's likes field with id: %s",
             recommendation_id,
         )
 
@@ -338,7 +338,7 @@ class LikeResource(Resource):
         app.logger.info(
             "Recommendation with ID: %d - likes field incremented.", recommendation.id
         )
-        return jsonify(recommendation.serialize()), status.HTTP_200_OK
+        return recommendation.serialize(), status.HTTP_200_OK
 
     ######################################################################
     # DECREMENT LIKES FIELD FOR A RECOMMENDATION
@@ -352,7 +352,7 @@ class LikeResource(Resource):
         This endpoint will decrement the likes for the Recommendation with ID specified in URL
         """
         app.logger.info(
-            "Request to decrement recommendation's likes field with id: %d",
+            "Request to decrement recommendation's likes field with id: %s",
             recommendation_id,
         )
 
@@ -368,7 +368,7 @@ class LikeResource(Resource):
         app.logger.info(
             "Recommendation with ID: %d - likes field decremented.", recommendation.id
         )
-        return jsonify(recommendation.serialize()), status.HTTP_200_OK
+        return recommendation.serialize(), status.HTTP_200_OK
 
 
 ######################################################################

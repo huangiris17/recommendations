@@ -7,7 +7,7 @@ from selenium import webdriver
 
 WAIT_SECONDS = int(getenv("WAIT_SECONDS", "60"))
 PORT = getenv("PORT", "8000")
-BASE_URL = getenv("BASE_URL", f"http://localhost:{PORT}")
+BASE_URL = getenv("BASE_URL", f"http://localhost:{PORT}/api")
 DRIVER = getenv("DRIVER", "chrome").lower()
 
 

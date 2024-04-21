@@ -63,8 +63,9 @@ def create_app():
     with app.app_context():
         # Import the routes After the Flask app is created
         # pylint: disable=import-outside-toplevel
+        # pylint: disable=unused-import
         from service import routes, models  # noqa: F401, E402
-        from service.common import error_handlers  # pylint: disable=unused-import
+        from service.common import error_handlers
         from service.models import db
 
         db.init_app(app)
@@ -80,7 +81,11 @@ def create_app():
         log_handlers.init_logging(app, "gunicorn.error")
 
         app.logger.info(70 * "*")
-        app.logger.info("  P E T   S E R V I C E   R U N N I N G  ".center(70, "*"))
+        app.logger.info(
+            "  R E C O M M E N D A T I O N   S E R V I C E   R U N N I N G  ".center(
+                70, "*"
+            )
+        )
         app.logger.info(70 * "*")
 
         app.logger.info("Service initialized!")
