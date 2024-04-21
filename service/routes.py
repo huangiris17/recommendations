@@ -92,7 +92,7 @@ create_model = api.model(
             description='one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"},\
                 denotes the relationship between product a and product b',
         ),
-        "likes": fields.int(
+        "likes": fields.Integer(
             required=True,
             description="Integer no less than 0, reflects the popularity of a recommendation",
         ),
@@ -102,18 +102,28 @@ create_model = api.model(
 recommendation_model = api.inherit(
     "RecommendationModel",
     create_model,
-    {"id": fields.int(readOnly=True, description="Integer, serves as the primary key")},
+    {
+        "id": fields.Integer(
+            readOnly=True, description="Integer, serves as the primary key"
+        )
+    },
 )
 
 # query string arguments
 recommendation_args = reqparse.RequestParser()
 recommendation_args.add_argument(
-    "product_a_sku", type=str, location="args", required=False,
-    help="String with no more than 10 characters, can not be null, represents product a"
+    "product_a_sku",
+    type=str,
+    location="args",
+    required=False,
+    help="String with no more than 10 characters, can not be null, represents product a",
 )
 recommendation_args.add_argument(
-    "recommendation_type", type=str, location="args", required=False,
-    help='one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"}, denotes the relationship between product a and product b'
+    "recommendation_type",
+    type=str,
+    location="args",
+    required=False,
+    help='one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"}, denotes the relationship between product a and product b',
 )
 
 
@@ -161,7 +171,7 @@ class RecommendationResource(Resource):
     # UPDATE AN EXISTING RECOMMENDATION
     # ------------------------------------------------------------------
     @api.doc("update_recommendations")
-    @@api.response(404, "Recommendation with id not found")
+    @api.response(404, "Recommendation with id not found")
     @api.response(400, "The posted Recommendation data was not valid")
     @api.expect(recommendation_model)
     @api.marshal_with(recommendation_model)
@@ -171,7 +181,9 @@ class RecommendationResource(Resource):
 
         This endpoint will update a Recommendation based on the body that is posted
         """
-        app.logger.info("Request to update recommendation with id: %d", recommendation_id)
+        app.logger.info(
+            "Request to update recommendation with id: %d", recommendation_id
+        )
         check_content_type("application/json")
 
         recommendation = Recommendation.find(recommendation_id)
@@ -199,12 +211,16 @@ class RecommendationResource(Resource):
 
         This endpoint will delete a Recommendation based the id specified in the path
         """
-        app.logger.info("Request to delete recommendation with id: %d", recommendation_id)
+        app.logger.info(
+            "Request to delete recommendation with id: %d", recommendation_id
+        )
 
         recommendation = Recommendation.find(recommendation_id)
         if recommendation:
             recommendation.delete()
-            app.logger.info("Recommendation with ID: %d was deleted.", recommendation_id)
+            app.logger.info(
+                "Recommendation with ID: %d was deleted.", recommendation_id
+            )
 
         return "", status.HTTP_204_NO_CONTENT
 
@@ -248,7 +264,6 @@ class RecommendationCollection(Resource):
         results = [recommendation.serialize() for recommendation in recommendations]
         app.logger.info("Returning %d recommendations", len(results))
         return jsonify(results), status.HTTP_200_OK
-
 
     ######################################################################
     # CREATE A NEW RECOMMENDATION
