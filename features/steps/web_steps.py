@@ -36,7 +36,7 @@ ID_PREFIX = "recommendation_"
 @when('I visit the "Home Page"')
 def step_impl(context):
     """Make a call to the base URL"""
-    context.driver.get(context.base_url)
+    context.driver.get(context.root_url)
     # Uncomment next line to take a screenshot of the web page
     # context.driver.save_screenshot('home_page.png')
 

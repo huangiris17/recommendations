@@ -7,12 +7,14 @@ from selenium import webdriver
 
 WAIT_SECONDS = int(getenv("WAIT_SECONDS", "60"))
 PORT = getenv("PORT", "8000")
+ROOT_URL = getenv("BASE_URL", f"http://localhost:{PORT}")
 BASE_URL = getenv("BASE_URL", f"http://localhost:{PORT}/api")
 DRIVER = getenv("DRIVER", "chrome").lower()
 
 
 def before_all(context):
     """Executed once before all tests"""
+    context.root_url = ROOT_URL
     context.base_url = BASE_URL
     context.wait_seconds = WAIT_SECONDS
     # Select either Chrome or Firefox
