@@ -6,17 +6,11 @@
 [![BDD Testing](https://github.com/CSCI-GA-2820-SP24-003/recommendations/actions/workflows/bdd.yml/badge.svg)](https://github.com/CSCI-GA-2820-SP24-003/recommendations/actions)
 [![codecov](https://codecov.io/gh/CSCI-GA-2820-SP24-003/recommendations/graph/badge.svg?token=UIX15W64TK)](https://codecov.io/gh/CSCI-GA-2820-SP24-003/recommendations)
 
-The project is based on [NYU DevOps Project Template](https://github.com/nyu-devops/project-template)
-
-The TDD testing (pytest) is based on [NYU DevOps Lab Flask TDD](https://github.com/nyu-devops/lab-flask-tdd)
-
-The k8s templates are based on [NYU DevOps Lab Kubernetes](https://github.com/nyu-devops/lab-kubernetes)
-
-The BDD testing (behave) is based on [NYU DevOps Lab Flask BDD](https://github.com/nyu-devops/lab-flask-bdd)
-
 ## Overview
 
-This course project is the backend for an eCommerce website as a collection of RESTful services. The class is divided into 9 squads, and each squad develops and runs a service end-to-end. This repo belongs to the Recommendations Squad who is responsible for managing relationships between two products.
+This project is a RESTful service managing relationships between two products.
+
+This project is part of a course project that is the backend for an eCommerce website as a collection of RESTful services. The class is divided into 9 squads, and each squad develops and runs a service end-to-end. This repo belongs to the Recommendations Squad who is responsible for managing relationships between two products.
 
 ## Contents
 
@@ -28,7 +22,7 @@ The repo contains the following:
 .gitattributes      - File to gix Windows CRLF issues
 .devcontainers/     - Folder with support for VSCode Remote Containers
 dot-env-example     - copy to .env to use environment variables
-pyproject.toml      - Poetry list of Python libraries required by your code
+pyproject.toml      - Poetry list of Python libraries required by the code
 
 service/                   - service python package
 ├── __init__.py            - package initializer
@@ -41,11 +35,20 @@ service/                   - service python package
     ├── log_handlers.py    - logging setup code
     └── status.py          - HTTP status constants
 
-tests/                     - test cases package
+tests/                     - TDD test cases package
 ├── __init__.py            - package initializer
 ├── test_cli_commands.py   - test suite for the CLI
 ├── test_models.py         - test suite for business models
 └── test_routes.py         - test suite for service routes
+
+features/                             - BDD test cases package
+│   steps/                            - test steps
+│   ├── recommendations_steps.py      - to be executed before every test
+│   └── web_steps.py                  - implementation of test steps
+├── environment.py                    - prepare the BDD testing environment
+└── recommendations.feature           - BDD tests
+
+k8s/                        - configuration files for kubernetes deployment
 ```
 
 ## Database Table Schema
@@ -133,6 +136,18 @@ Increments likes for a Recommendation.
 ### DELETE "/recommendations/\<int:recommendation_id\>/like"
 
 Decrement likes for a Recommendation.
+
+## References
+
+The project is based on [NYU DevOps Project Template](https://github.com/nyu-devops/project-template)
+
+The TDD testing (pytest) is based on [NYU DevOps Lab Flask TDD](https://github.com/nyu-devops/lab-flask-tdd)
+
+The k8s templates are based on [NYU DevOps Lab Kubernetes](https://github.com/nyu-devops/lab-kubernetes)
+
+The BDD testing (behave) is based on [NYU DevOps Lab Flask BDD](https://github.com/nyu-devops/lab-flask-bdd)
+
+The flask-restx implementation is based on [NYU DevOps Lab Flask Rest Plus Swagger](https://github.com/nyu-devops/lab-flask-restplus-swagger)
 
 ## License
 
