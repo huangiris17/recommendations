@@ -14,7 +14,7 @@ from .factories import RecommendationFactory
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
 )
-BASE_URL = "/recommendations"
+BASE_URL = "/api/recommendations"
 
 ######################################################################
 #  T E S T   R E C O M M E N D A T I O N   S E R V I C E
