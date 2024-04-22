@@ -25,7 +25,7 @@ and Delete Recommendations from the inventory of recommendations in the Recommen
 from flask import jsonify, request, abort
 from flask import current_app as app  # Import Flask
 from flask_restx import Resource, fields, reqparse
-from service.models import Recommendation, RecommendationType, DataValidationError
+from service.models import Recommendation, RecommendationType
 from service.common import status  # HTTP Status Codes
 from . import api
 
@@ -363,13 +363,7 @@ class LikeResource(Resource):
                 f"Recommendation with id '{recommendation_id}' was not found.",
             )
 
-        try:
-            recommendation.remove_like()
-        except DataValidationError:
-            error(
-                status.HTTP_400_BAD_REQUEST,
-                "Likes cannot be negative",
-            )
+        recommendation.remove_like()
 
         app.logger.info(
             "Recommendation with ID: %d - likes field decremented.", recommendation.id
