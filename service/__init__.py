@@ -64,6 +64,7 @@ def create_app():
         # Import the routes After the Flask app is created
         # pylint: disable=import-outside-toplevel
         # pylint: disable=unused-import
+        # pylint: disable=cyclic-import
         from service import routes, models  # noqa: F401, E402
         from service.common import error_handlers
         from service.models import db
