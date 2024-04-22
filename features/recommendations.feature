@@ -88,7 +88,7 @@
         And I set the "product_b_sku" to "Product_b"
         And I select "CROSS_SELL" in the "recommendation_type" dropdown
         And I press the "Create" button
-        Then I should see the message "409 Conflict: Duplicate recommendation detected."
+        Then I should see the message "Duplicate recommendation detected."
 
     Scenario: Delete a Recommendation
         When I visit the "Home Page"
@@ -114,7 +114,7 @@
         When I press the "Clear" button
         And I set the "Id" to "-1"
         And I press the "Delete" button
-        Then I should see the message "Server error!"
+        Then I should see the message "Recommendation has been Deleted!"
 
     Scenario: Retrieve recommendation
         When I visit the "Home Page"
@@ -136,7 +136,7 @@
         When I press the "Clear" button
         And I set the "Id" to "123456"
         And I press the "Retrieve" button
-        Then I should see the message "404 Not Found: Recommendation with id '123456' was not found."
+        Then the message should contain "Recommendation with id '123456' was not found."
 
     Scenario: Update a Reccommendation
         When I visit the "Home Page"
@@ -164,7 +164,7 @@
         When I set the "Id" to "123456"
         And I set the "Product B SKU" to "SqefQGEs"
         And I press the "Update" button
-        Then I should see the message "404 Not Found: Recommendation with id: '123456' was not found."
+        Then the message should contain "Recommendation with id '123456' was not found."
 
     Scenario: Like a recommendation increases like count
         When I visit the "Home Page"

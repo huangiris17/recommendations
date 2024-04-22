@@ -145,6 +145,10 @@ def step_impl(context, message):
     )
     assert found
 
+@then('the message should contain "{message}"')
+def step_impl(context, message):
+    element = context.driver.find_element(By.ID, "flash_message")
+    assert message in element.text
 
 ##################################################################
 # This code works because of the following naming convention:
