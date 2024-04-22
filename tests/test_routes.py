@@ -229,7 +229,10 @@ class TestRecommendationService(TestCase):
         """Test if using an unsupported HTTP method returns a 405 Method Not Allowed"""
         response = self.client.put(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.get_json()["message"], "The method is not allowed for the requested URL.")
+        self.assertEqual(
+            response.get_json()["message"],
+            "The method is not allowed for the requested URL.",
+        )
 
     def test_unsupported_media_type(self):
         """Test if submitting with an unsupported media type returns a 415 Unsupported Media Type"""
@@ -237,7 +240,9 @@ class TestRecommendationService(TestCase):
             BASE_URL, data="plain text", content_type="text/plain"
         )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-        self.assertEqual(response.get_json()["message"], "Content-Type must be application/json")
+        self.assertEqual(
+            response.get_json()["message"], "Content-Type must be application/json"
+        )
 
     def test_create_recommendation_duplicate(self):
         """It should not create a duplicate Recommendation"""
