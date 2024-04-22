@@ -190,7 +190,7 @@ class RecommendationResource(Resource):
         if not recommendation:
             error(
                 status.HTTP_404_NOT_FOUND,
-                f"Recommendation with id: '{recommendation_id}' was not found.",
+                f"Recommendation with id '{recommendation_id}' was not found.",
             )
 
         recommendation.deserialize(request.get_json())
@@ -330,7 +330,7 @@ class LikeResource(Resource):
         if not recommendation:
             error(
                 status.HTTP_404_NOT_FOUND,
-                f"Recommendation with id: '{recommendation_id}' was not found.",
+                f"Recommendation with id '{recommendation_id}' was not found.",
             )
 
         recommendation.add_like()
@@ -360,7 +360,7 @@ class LikeResource(Resource):
         if not recommendation:
             error(
                 status.HTTP_404_NOT_FOUND,
-                f"Recommendation with id: '{recommendation_id}' was not found.",
+                f"Recommendation with id '{recommendation_id}' was not found.",
             )
 
         recommendation.remove_like()
