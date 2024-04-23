@@ -193,7 +193,8 @@ class RecommendationResource(Resource):
                 f"Recommendation with id '{recommendation_id}' was not found.",
             )
 
-        recommendation.deserialize(request.get_json())
+        data = api.payload
+        recommendation.deserialize(data)
         recommendation.id = recommendation_id
         recommendation.update()
 
@@ -283,7 +284,7 @@ class RecommendationCollection(Resource):
         check_content_type("application/json")
 
         recommendation = Recommendation()
-        recommendation.deserialize(request.get_json())
+        recommendation.deserialize(api.payload)
 
         if recommendation.exists():
             error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
@@ -404,4 +405,4 @@ def check_content_type(content_type):
 def error(status_code, reason):
     """Logs the error and then aborts"""
     app.logger.error(reason)
-    abort(status_code, reason)
+    api.abort(status_code, reason)
