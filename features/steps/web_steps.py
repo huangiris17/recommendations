@@ -36,7 +36,7 @@ ID_PREFIX = "recommendation_"
 @when('I visit the "Home Page"')
 def step_impl(context):
     """Make a call to the base URL"""
-    context.driver.get(context.base_url)
+    context.driver.get(context.root_url)
     # Uncomment next line to take a screenshot of the web page
     # context.driver.save_screenshot('home_page.png')
 
@@ -145,6 +145,10 @@ def step_impl(context, message):
     )
     assert found
 
+@then('the message should contain "{message}"')
+def step_impl(context, message):
+    element = context.driver.find_element(By.ID, "flash_message")
+    assert message in element.text
 
 ##################################################################
 # This code works because of the following naming convention:

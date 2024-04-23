@@ -14,7 +14,7 @@ from .factories import RecommendationFactory
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
 )
-BASE_URL = "/recommendations"
+BASE_URL = "/api/recommendations"
 
 ######################################################################
 #  T E S T   R E C O M M E N D A T I O N   S E R V I C E
@@ -201,7 +201,7 @@ class TestRecommendationService(TestCase):
         """Test if submitting invalid data returns a data validation error"""
         # test missing field
         invalid_data = {"product_a_sku": "123", "recommendation_type": "UP_SELL"}
-        response = self.client.post("/recommendations", json=invalid_data)
+        response = self.client.post(BASE_URL, json=invalid_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("error", response.get_json())
         self.assertEqual(response.get_json()["error"], "Bad Request")
@@ -212,7 +212,7 @@ class TestRecommendationService(TestCase):
             "product_b_sku": "123",
             "recommendation_type": "InvalidType",
         }
-        response = self.client.post("/recommendations", json=invalid_data)
+        response = self.client.post(BASE_URL, json=invalid_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("error", response.get_json())
         self.assertEqual(response.get_json()["error"], "Bad Request")
@@ -220,26 +220,29 @@ class TestRecommendationService(TestCase):
 
     def test_not_found(self):
         """Test if requesting a non-existent Recommendation returns a 404 Not Found"""
-        response = self.client.get("/recommendations/9999")
+        response = self.client.get("{BASE_URL}/9999")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertIn("error", response.get_json())
         self.assertEqual(response.get_json()["error"], "Not Found")
 
     def test_method_not_allowed(self):
         """Test if using an unsupported HTTP method returns a 405 Method Not Allowed"""
-        response = self.client.put("/recommendations")
+        response = self.client.put(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertIn("error", response.get_json())
-        self.assertEqual(response.get_json()["error"], "Method not Allowed")
+        self.assertEqual(
+            response.get_json()["message"],
+            "The method is not allowed for the requested URL.",
+        )
 
     def test_unsupported_media_type(self):
         """Test if submitting with an unsupported media type returns a 415 Unsupported Media Type"""
         response = self.client.post(
-            "/recommendations", data="plain text", content_type="text/plain"
+            BASE_URL, data="plain text", content_type="text/plain"
         )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-        self.assertIn("error", response.get_json())
-        self.assertEqual(response.get_json()["error"], "Unsupported media type")
+        self.assertEqual(
+            response.get_json()["message"], "Content-Type must be application/json"
+        )
 
     def test_create_recommendation_duplicate(self):
         """It should not create a duplicate Recommendation"""
