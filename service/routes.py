@@ -40,32 +40,6 @@ def health_check():
 
 
 ######################################################################
-# GET INDEX
-######################################################################
-# @app.route("/")
-# def index():
-#     """Root URL response"""
-#     return (
-#         jsonify(
-#             name="Recommendations REST API Service",
-#             version="1.0",
-#             paths=[
-#                 (
-#                     {
-#                         "path": str(rule),
-#                         "methods": list(rule.methods),
-#                         "description": globals()[rule.endpoint].__doc__,
-#                     }
-#                 )
-#                 for rule in app.url_map.iter_rules()
-#                 if rule.endpoint != "static"
-#             ],
-#         ),
-#         status.HTTP_200_OK,
-#     )
-
-
-######################################################################
 # Configure the Root route before OpenAPI
 ######################################################################
 @app.route("/")
@@ -402,7 +376,7 @@ def check_content_type(content_type):
 ######################################################################
 # Logs error messages before aborting
 ######################################################################
-def error(status_code, reason):
+def error(error_code: int, message: str):
     """Logs the error and then aborts"""
-    app.logger.error(reason)
-    api.abort(status_code, reason)
+    app.logger.error(message)
+    api.abort(error_code, message)
