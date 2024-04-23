@@ -22,7 +22,7 @@ This service implements a REST API that allows you to Create, Read, Update
 and Delete Recommendations from the inventory of recommendations in the RecommendationShop
 """
 
-from flask import jsonify, request, abort
+from flask import request, jsonify
 from flask import current_app as app  # Import Flask
 from flask_restx import Resource, fields, reqparse
 from service.models import Recommendation, RecommendationType
@@ -37,32 +37,6 @@ from . import api
 def health_check():
     """Let them know our heart is still beating"""
     return jsonify(status=200, message="Healthy"), status.HTTP_200_OK
-
-
-######################################################################
-# GET INDEX
-######################################################################
-# @app.route("/")
-# def index():
-#     """Root URL response"""
-#     return (
-#         jsonify(
-#             name="Recommendations REST API Service",
-#             version="1.0",
-#             paths=[
-#                 (
-#                     {
-#                         "path": str(rule),
-#                         "methods": list(rule.methods),
-#                         "description": globals()[rule.endpoint].__doc__,
-#                     }
-#                 )
-#                 for rule in app.url_map.iter_rules()
-#                 if rule.endpoint != "static"
-#             ],
-#         ),
-#         status.HTTP_200_OK,
-#     )
 
 
 ######################################################################
@@ -193,7 +167,8 @@ class RecommendationResource(Resource):
                 f"Recommendation with id '{recommendation_id}' was not found.",
             )
 
-        recommendation.deserialize(request.get_json())
+        data = api.payload
+        recommendation.deserialize(data)
         recommendation.id = recommendation_id
         recommendation.update()
 
@@ -283,7 +258,7 @@ class RecommendationCollection(Resource):
         check_content_type("application/json")
 
         recommendation = Recommendation()
-        recommendation.deserialize(request.get_json())
+        recommendation.deserialize(api.payload)
 
         if recommendation.exists():
             error(status.HTTP_409_CONFLICT, "Duplicate recommendation detected.")
@@ -401,7 +376,7 @@ def check_content_type(content_type):
 ######################################################################
 # Logs error messages before aborting
 ######################################################################
-def error(status_code, reason):
+def error(error_code: int, message: str):
     """Logs the error and then aborts"""
-    app.logger.error(reason)
-    abort(status_code, reason)
+    app.logger.error(message)
+    api.abort(error_code, message)

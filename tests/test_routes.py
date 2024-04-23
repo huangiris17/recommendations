@@ -83,24 +83,6 @@ class TestRecommendationService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(b"Recommendation REST API Service", response.data)
 
-    # def test_index(self):
-    #     """It should return information about endpoints"""
-    #     resp = self.client.get("/")
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     self.assertIn("name", resp.json)
-    #     self.assertIn("version", resp.json)
-    #     self.assertIn("paths", resp.json)
-    #     self.assertEqual(
-    #         len(list(resp.json["paths"])),
-    #         len(
-    #             list(
-    #                 filter(
-    #                     lambda rule: rule.endpoint != "static", app.url_map.iter_rules()
-    #                 )
-    #             )
-    #         ),
-    #     )
-
     def test_get_recommendation(self):
         """It should Get a single Recommendation"""
         # get the id of a recommendation
@@ -220,10 +202,12 @@ class TestRecommendationService(TestCase):
 
     def test_not_found(self):
         """Test if requesting a non-existent Recommendation returns a 404 Not Found"""
-        response = self.client.get("{BASE_URL}/9999")
+        response = self.client.get(f"{BASE_URL}/9999")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("error", response.get_json())
-        self.assertEqual(response.get_json()["error"], "Not Found")
+        self.assertIn(
+            "Recommendation with id '9999' was not found",
+            response.get_json()["message"]
+        )
 
     def test_method_not_allowed(self):
         """Test if using an unsupported HTTP method returns a 405 Method Not Allowed"""
