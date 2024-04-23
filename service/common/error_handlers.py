@@ -16,7 +16,7 @@
 """
 Module: error_handlers
 """
-from flask import jsonify
+
 from flask import current_app as app  # Import Flask application
 from service import api
 from service.models import DataValidationError
@@ -37,16 +37,19 @@ def request_validation_error(error):
         "message": message,
     }, status.HTTP_400_BAD_REQUEST
 
-# @api.errorhandler(DatabaseConnectionError)
-# def database_connection_error(error):
-#     """Handles Database Errors from connection attempts"""
-#     message = str(error)
-#     app.logger.critical(message)
-#     return {
-#         "status_code": status.HTTP_503_SERVICE_UNAVAILABLE,
-#         "error": "Service Unavailable",
-#         "message": message,
-#     }, status.HTTP_503_SERVICE_UNAVAILABLE
+
+@app.errorhandler(status.HTTP_404_NOT_FOUND)
+def not_found(error):
+    """Handles resources not found with 404_NOT_FOUND"""
+    message = str(error)
+    app.logger.warning(message)
+
+    return {
+        "status_code": status.HTTP_404_NOT_FOUND,
+        "error": "Not Found",
+        "message": message,
+    }, status.HTTP_404_NOT_FOUND
+
 
 # @app.errorhandler(status.HTTP_400_BAD_REQUEST)
 # def bad_request(error):
@@ -58,15 +61,4 @@ def request_validation_error(error):
 #             status=status.HTTP_400_BAD_REQUEST, error="Bad Request", message=message
 #         ),
 #         status.HTTP_400_BAD_REQUEST,
-#     )
-
-
-# @app.errorhandler(status.HTTP_404_NOT_FOUND)
-# def not_found(error):
-#     """Handles resources not found with 404_NOT_FOUND"""
-#     message = str(error)
-#     app.logger.warning(message)
-#     return (
-#         jsonify(status=status.HTTP_404_NOT_FOUND, error="Not Found", message=message),
-#         status.HTTP_404_NOT_FOUND,
 #     )

@@ -22,7 +22,7 @@ This service implements a REST API that allows you to Create, Read, Update
 and Delete Recommendations from the inventory of recommendations in the RecommendationShop
 """
 
-from flask import jsonify, request, abort
+from flask import request, jsonify
 from flask import current_app as app  # Import Flask
 from flask_restx import Resource, fields, reqparse
 from service.models import Recommendation, RecommendationType
