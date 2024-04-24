@@ -67,7 +67,7 @@ create_model = api.model(
             description='Denotes the relationship between product a and product b',
         ),
         "likes": fields.Integer(
-            required=True,
+            required=False,
             description="Reflects the popularity of a recommendation, Integer no less than 0",
         ),
     },
@@ -77,6 +77,11 @@ recommendation_model = api.inherit(
     "RecommendationModel",
     create_model,
     {
+        "likes": fields.Integer(
+            required=True,
+            readOnly=True, 
+            description="Reflects the popularity of a recommendation, Integer no less than 0",
+        ),
         "id": fields.Integer(
             required=True,
             readOnly=True, 
@@ -216,7 +221,11 @@ class RecommendationCollection(Resource):
     @api.expect(recommendation_args, validate=True)
     @api.marshal_list_with(recommendation_model)
     def get(self):
-        """Returns Recommendations that satify condition in filter"""
+        """
+        List Recommendations
+        
+        Returns list of Recommendations that satify condition in filter.
+        """
         app.logger.info("Request for recommendation list")
 
         recommendations = []
@@ -254,6 +263,7 @@ class RecommendationCollection(Resource):
     def post(self):
         """
         Creates a Recommendation
+
         This endpoint will create a Recommendation based on the data in the body that is posted
         """
         app.logger.info("Request to create a recommendation")
