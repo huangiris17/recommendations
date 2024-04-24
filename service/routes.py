@@ -79,12 +79,12 @@ recommendation_model = api.inherit(
     {
         "likes": fields.Integer(
             required=True,
-            readOnly=True, 
+            readOnly=True,
             description="Reflects the popularity of a recommendation, Integer no less than 0",
         ),
         "id": fields.Integer(
             required=True,
-            readOnly=True, 
+            readOnly=True,
             description="Serves as the primary key",
         )
     },
@@ -223,7 +223,7 @@ class RecommendationCollection(Resource):
     def get(self):
         """
         List Recommendations
-        
+
         Returns list of Recommendations that satify condition in filter.
         """
         app.logger.info("Request for recommendation list")
