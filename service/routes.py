@@ -62,6 +62,7 @@ create_model = api.model(
         ),
         # pylint: disable=protected-access
         "recommendation_type": fields.String(
+            required=True,
             enum=RecommendationType._member_names_,
             description='Denotes the relationship between product a and product b',
         ),
@@ -77,7 +78,9 @@ recommendation_model = api.inherit(
     create_model,
     {
         "id": fields.Integer(
-            readOnly=True, description="Serves as the primary key"
+            required=True,
+            readOnly=True, 
+            description="Serves as the primary key",
         )
     },
 )
@@ -144,15 +147,15 @@ class RecommendationResource(Resource):
     # UPDATE AN EXISTING RECOMMENDATION
     # ------------------------------------------------------------------
     @api.doc("update_recommendations")
-    @api.response(404, "Recommendation with id not found")
-    @api.response(400, "The posted Recommendation data was not valid")
+    @api.response(404, "Recommendation with id was not found")
+    @api.response(400, "The Recommendation data was not valid")
     @api.expect(create_model)
     @api.marshal_with(recommendation_model)
     def put(self, recommendation_id):
         """
         Updates a Recommendation
 
-        This endpoint will update a Recommendation based on the body that is posted
+        This endpoint will update a Recommendation based on the body that is passed
         """
         app.logger.info(
             "Request to update recommendation with id: %s", recommendation_id
