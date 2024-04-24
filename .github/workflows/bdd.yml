@@ -54,8 +54,8 @@ jobs:
           gunicorn --bind 0.0.0.0:$PORT --log-level=info wsgi:app &
           echo "Waiting for service to stabilize..."
           sleep 5
-          echo "Checking service /health..."
-          curl -i http://localhost:$PORT/health
+          echo "Checking service /api/health..."
+          curl -i http://localhost:$PORT/api/health
           echo "\n*** SERVER IS RUNNING ***"
           behave
         env:

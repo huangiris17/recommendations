@@ -52,7 +52,7 @@ def create_app():
         app,
         version="1.0.0",
         title="Recommendation REST API Service",
-        description="This is a sample server Recommendation server.",
+        description="This is a Recommendation server.",
         default="Recommendations",
         default_label="Recommendation operations",
         doc="/apidocs",  # default also could use doc='/apidocs/'

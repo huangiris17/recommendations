@@ -33,9 +33,9 @@ from . import api
 ######################################################################
 # GET HEALTH CHECK
 ######################################################################
-@app.route("/health")
+@app.route("/api/health")
 def health_check():
-    """Let them know our heart is still beating"""
+    """Let them know our heart is still beating. Used by k8s to check if service is alive."""
     return jsonify(status=200, message="Healthy"), status.HTTP_200_OK
 
 
@@ -44,7 +44,7 @@ def health_check():
 ######################################################################
 @app.route("/")
 def index():
-    """Index page"""
+    """Web page for administrators."""
     return app.send_static_file("index.html")
 
 
@@ -54,21 +54,21 @@ create_model = api.model(
     {
         "product_a_sku": fields.String(
             required=True,
-            description="String with no more than 10 characters, can not be null, represents product a",
+            description="Represents product a, String with no more than 10 characters, can not be null",
         ),
         "product_b_sku": fields.String(
             required=True,
-            description="String with no more than 10 characters, can not be null, represents product b",
+            description="Represents product b, String with no more than 10 characters, can not be null",
         ),
         # pylint: disable=protected-access
         "recommendation_type": fields.String(
+            required=True,
             enum=RecommendationType._member_names_,
-            description='one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"},\
-                denotes the relationship between product a and product b',
+            description='Denotes the relationship between product a and product b',
         ),
         "likes": fields.Integer(
-            required=True,
-            description="Integer no less than 0, reflects the popularity of a recommendation",
+            required=False,
+            description="Reflects the popularity of a recommendation, Integer no less than 0",
         ),
     },
 )
@@ -77,8 +77,15 @@ recommendation_model = api.inherit(
     "RecommendationModel",
     create_model,
     {
+        "likes": fields.Integer(
+            required=True,
+            readOnly=True,
+            description="Reflects the popularity of a recommendation, Integer no less than 0",
+        ),
         "id": fields.Integer(
-            readOnly=True, description="Integer, serves as the primary key"
+            required=True,
+            readOnly=True,
+            description="Serves as the primary key",
         )
     },
 )
@@ -90,14 +97,14 @@ recommendation_args.add_argument(
     type=str,
     location="args",
     required=False,
-    help="String with no more than 10 characters, can not be null, represents product a",
+    help="Represents product a, String with no more than 10 characters",
 )
 recommendation_args.add_argument(
     "recommendation_type",
     type=str,
     location="args",
     required=False,
-    help='one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"}, denotes the relationship between product a and product b',
+    help='Denotes the relationship between product a and product b, one of {"UP_SELL", "CROSS_SELL", "ACCESSORY", "BUNDLE"}',
 )
 
 
@@ -145,15 +152,15 @@ class RecommendationResource(Resource):
     # UPDATE AN EXISTING RECOMMENDATION
     # ------------------------------------------------------------------
     @api.doc("update_recommendations")
-    @api.response(404, "Recommendation with id not found")
-    @api.response(400, "The posted Recommendation data was not valid")
+    @api.response(404, "Recommendation with id was not found")
+    @api.response(400, "The Recommendation data was not valid")
     @api.expect(create_model)
     @api.marshal_with(recommendation_model)
     def put(self, recommendation_id):
         """
         Updates a Recommendation
 
-        This endpoint will update a Recommendation based on the body that is posted
+        This endpoint will update a Recommendation based on the body that is passed
         """
         app.logger.info(
             "Request to update recommendation with id: %s", recommendation_id
@@ -214,7 +221,11 @@ class RecommendationCollection(Resource):
     @api.expect(recommendation_args, validate=True)
     @api.marshal_list_with(recommendation_model)
     def get(self):
-        """Returns all of the Recommendations"""
+        """
+        List Recommendations
+
+        Returns list of Recommendations that satify condition in filter.
+        """
         app.logger.info("Request for recommendation list")
 
         recommendations = []
@@ -252,6 +263,7 @@ class RecommendationCollection(Resource):
     def post(self):
         """
         Creates a Recommendation
+
         This endpoint will create a Recommendation based on the data in the body that is posted
         """
         app.logger.info("Request to create a recommendation")
