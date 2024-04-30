@@ -1,25 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  creationTimestamp: '2024-04-30T16:28:21Z'
-  generation: 1
-  managedFields:
-    - apiVersion: tekton.dev/v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          .: {}
-          'f:finally': {}
-          'f:params': {}
-          'f:tasks': {}
-          'f:workspaces': {}
-      manager: Mozilla
-      operation: Update
-      time: '2024-04-30T16:28:21Z'
   name: cd-pipeline
-  namespace: henryhu-zh-dev
-  resourceVersion: '4256842262'
-  uid: 58aa69ff-4ce0-41b0-b29b-77d7db7c2f46
 spec:
   params:
     - description: The URL to the git repo
