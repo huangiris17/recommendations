@@ -124,7 +124,7 @@ spec:
         name: buildah
       workspaces:
         - name: source
-          workspace: ipipeline-workspace
+          workspace: pipeline-workspace
     - name: deploy-image
       params:
         - name: image_name
