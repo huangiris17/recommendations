@@ -24,7 +24,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: recommendation
-        image: cluster-registry:32000/recommendation:1.0
+        image: cluster-registry:32000/recommendation:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
